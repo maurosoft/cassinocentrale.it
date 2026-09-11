@@ -12,9 +12,12 @@ git pull origin main
 echo "==> 2/7 Installo/aggiorno le dipendenze PHP (Composer)..."
 composer install --no-dev --optimize-autoloader
 
-echo "==> 3/7 Installo le dipendenze e compilo la grafica (Node/Vite)..."
-npm ci
-npm run build
+echo "==> 3/7 Grafica compilata (se hai Node la ricompilo, altrimenti uso quella inclusa nel progetto)..."
+if command -v npm >/dev/null 2>&1; then
+    npm ci && npm run build
+else
+    echo "    Node non presente: uso la grafica gia' compilata (public/build). OK."
+fi
 
 echo "==> 4/7 Aggiorno il database (migrazioni)..."
 php artisan migrate --force
