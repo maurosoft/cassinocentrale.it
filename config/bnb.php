@@ -29,17 +29,19 @@ return [
     // Numero WhatsApp per il pulsante "Chatta con noi" (formato internazionale senza +).
     'whatsapp_number' => env('WHATSAPP_CONTACT_NUMBER'),
 
-    // Politica prezzi/sconti (Fase 3). Prezzo base 65 €/notte.
-    // Sconto del 10% quando la camera è occupata da 2 persone.
+    // Politica prezzi/sconti (usata dal motore di prenotazione in Fase 3).
+    //  - Prezzo base: 65 €/notte per 1 persona.
+    //  - In due: 10% di sconto (→ 58,50 €/notte).
+    //  - Soggiorni lunghi: da 3 notti, ulteriore 10% (valore di partenza, modificabile).
+    //  - stack_discounts: se false, si applica UNO solo sconto (il più conveniente),
+    //    per evitare sconti troppo alti sommati; se true, si sommano.
     'pricing' => [
         'single_price' => 65,
         'double_discount_percent' => 10,
-    ],
-    // (Predisposto anche lo sconto per soggiorni lunghi, da confermare.)
-    'discount' => [
-        'long_stay_enabled' => false,
-        'long_stay_min_nights' => 2,
+        'long_stay_enabled' => true,
+        'long_stay_min_nights' => 3,
         'long_stay_percent' => 10,
+        'stack_discounts' => false,
     ],
 
     'checkin' => [
