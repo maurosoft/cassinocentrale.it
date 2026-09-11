@@ -59,4 +59,38 @@
     .prose-bnb {
         @apply prose prose-neutral max-w-none prose-headings:font-serif prose-headings:text-ink prose-a:text-clay-600;
     }
+
+    /* Card che si "solleva" al passaggio del mouse */
+    .card-lift {
+        @apply transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Animazioni delicate
+------------------------------------------------------------------ */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Ingresso al caricamento (es. testo dell'hero) */
+.animate-fade-up { animation: fade-up 0.7s ease-out both; }
+.animate-delay-1 { animation-delay: 0.12s; }
+.animate-delay-2 { animation-delay: 0.24s; }
+.animate-delay-3 { animation-delay: 0.36s; }
+
+/* Comparsa allo scorrimento: gli elementi partono VISIBILI (nessun JS = tutto ok);
+   il JS aggiunge .reveal per prepararli e .is-visible quando entrano nello schermo. */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Rispetta chi preferisce ridurre le animazioni */
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-up, .reveal, .reveal.is-visible {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }

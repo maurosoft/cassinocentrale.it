@@ -22,8 +22,8 @@ class SiteSettingSeeder extends Seeder
 
             // Offerta in evidenza (idea marketing)
             ['key' => 'home.offer_enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'offerte'],
-            ['key' => 'home.offer_title', 'value' => 'Più notti, più risparmio', 'type' => 'string', 'group' => 'offerte'],
-            ['key' => 'home.offer_text', 'value' => 'Fermati almeno 2 notti e approfitta dello sconto sul soggiorno prenotando direttamente con noi, senza commissioni.', 'type' => 'string', 'group' => 'offerte'],
+            ['key' => 'home.offer_title', 'value' => 'Viaggiate in due? 10% di sconto', 'type' => 'string', 'group' => 'offerte'],
+            ['key' => 'home.offer_text', 'value' => 'Camera a 65 € a notte: prenotando direttamente con noi, in due hai il 10% di sconto. Nessuna commissione, sempre la miglior tariffa.', 'type' => 'string', 'group' => 'offerte'],
 
             // Scopri Cassino
             ['key' => 'discover.intro', 'value' => 'Dal B&B raggiungi a piedi o in pochi minuti storia, arte e natura: dall’Abbazia di Montecassino ai luoghi della memoria, fino alle attività convenzionate del centro.', 'type' => 'string', 'group' => 'discover'],

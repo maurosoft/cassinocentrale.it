@@ -21,11 +21,21 @@ class Place extends Model
         'servizi' => 'Servizi utili',
     ];
 
+    // Tipi di attività locali (negozi, ristoranti, ecc.).
+    public const TYPES = [
+        'negozio' => 'Negozio',
+        'ristorante' => 'Ristorante',
+        'bar' => 'Bar / Caffetteria',
+        'artigianato' => 'Artigianato',
+        'servizi' => 'Servizi',
+    ];
+
     protected $fillable = [
         'name',
         'slug',
         'description',
         'category',
+        'type',
         'distance_walking',
         'distance_car',
         'distance_bus',
@@ -66,6 +76,11 @@ class Place extends Model
     public function categoryLabel(): string
     {
         return self::CATEGORIES[$this->category] ?? ucfirst((string) $this->category);
+    }
+
+    public function typeLabel(): string
+    {
+        return self::TYPES[$this->type] ?? ucfirst((string) $this->type);
     }
 
     public function scopeActive($query)

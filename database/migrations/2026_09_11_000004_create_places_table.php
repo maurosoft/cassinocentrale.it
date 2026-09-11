@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('category')->nullable();        // storia, arte, natura, guerra...
+            $table->string('type')->nullable();             // per le attività locali: negozio, ristorante, bar...
             $table->string('distance_walking')->nullable(); // es. "10 min a piedi"
             $table->string('distance_car')->nullable();
             $table->string('distance_bus')->nullable();

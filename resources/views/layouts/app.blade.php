@@ -37,7 +37,8 @@
     </main>
 
     @include('partials.footer')
-    @include('partials.whatsapp')
+
+    {{-- Qui, in una fase successiva, andrà il widget del chatbot (in basso a destra). --}}
 
     @stack('scripts')
 </body>

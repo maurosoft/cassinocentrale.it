@@ -28,10 +28,11 @@ class RoomSeeder extends Seeder
                 'number_name' => '102',
                 'name' => 'Matrimoniale Dante',
                 'short_description' => 'Accogliente camera matrimoniale al primo piano, luminosa e silenziosa.',
-                'description' => "Camera matrimoniale elegante e confortevole, ideale per coppie e viaggiatori di lavoro. Arredata con gusto in tonalità calde, dispone di bagno privato, aria condizionata, TV e Wi-Fi in fibra. La posizione centralissima ti permette di raggiungere a piedi stazione, negozi e ristoranti.",
+                'description' => "Camera matrimoniale elegante e confortevole, ideale per coppie e viaggiatori di lavoro. Arredata con gusto in tonalità chiare e calde, dispone di bagno privato, aria condizionata, TV e Wi-Fi in fibra. La posizione centralissima ti permette di raggiungere a piedi stazione, negozi e ristoranti.",
                 'base_price' => 65,
                 'max_guests' => 2,
                 'has_kitchenette' => false,
+                'images' => ['images/rooms/room-102.jpg'],
                 'sort_order' => 1,
             ],
             [
@@ -39,29 +40,32 @@ class RoomSeeder extends Seeder
                 'name' => 'Matrimoniale Centrale',
                 'short_description' => 'Comoda matrimoniale nel cuore di Cassino, a due passi da tutto.',
                 'description' => "Una camera matrimoniale pensata per farti sentire a casa: letto comodo, bagno privato con doccia, climatizzatore e tutti i comfort per un soggiorno rilassante. Perfetta per chi vuole visitare Cassino e l'Abbazia di Montecassino senza pensieri.",
-                'base_price' => 70,
+                'base_price' => 65,
                 'max_guests' => 2,
                 'has_kitchenette' => false,
+                'images' => ['images/rooms/room-103.jpg'],
                 'sort_order' => 2,
             ],
             [
                 'number_name' => '104',
                 'name' => 'Matrimoniale Charme',
                 'short_description' => 'Camera matrimoniale spaziosa con dettagli curati e atmosfera calda.',
-                'description' => "La nostra camera più curata nei dettagli: ambiente accogliente, colori caldi e tutti i servizi inclusi. Bagno privato, aria condizionata, TV e Wi-Fi in fibra. Ideale per una fuga romantica o per una tappa comoda lungo il viaggio.",
-                'base_price' => 75,
+                'description' => "La nostra camera più curata nei dettagli: ambiente accogliente, colori chiari e tutti i servizi inclusi. Bagno privato, aria condizionata, TV e Wi-Fi in fibra. Ideale per una fuga romantica o per una tappa comoda lungo il viaggio.",
+                'base_price' => 65,
                 'max_guests' => 2,
                 'has_kitchenette' => false,
+                'images' => ['images/rooms/room-104.jpg'],
                 'sort_order' => 3,
             ],
             [
                 'number_name' => '205',
                 'name' => 'Matrimoniale con angolo cottura',
                 'short_description' => 'Matrimoniale al secondo piano con piccola base cucina: comoda per soggiorni più lunghi.',
-                'description' => "La soluzione perfetta per soggiorni più lunghi o per chi ama un pizzico di autonomia: oltre a tutti i comfort delle altre camere (bagno privato, aria condizionata, TV, Wi-Fi in fibra e colazione inclusa), questa camera dispone di un piccolo angolo cottura. Silenziosa e riservata, al secondo piano.",
-                'base_price' => 85,
+                'description' => "La soluzione perfetta per soggiorni più lunghi o per chi ama un pizzico di autonomia: oltre a tutti i comfort delle altre camere (bagno privato, aria condizionata, TV, Wi-Fi in fibra e colazione inclusa), questa camera dispone di un piccolo angolo cottura e di un balcone. Silenziosa e riservata, al secondo piano.",
+                'base_price' => 65,
                 'max_guests' => 2,
                 'has_kitchenette' => true,
+                'images' => ['images/rooms/room-205.jpg'],
                 'sort_order' => 4,
             ],
         ];
@@ -69,7 +73,7 @@ class RoomSeeder extends Seeder
         foreach ($rooms as $data) {
             $room = Room::updateOrCreate(
                 ['number_name' => $data['number_name']],
-                array_merge($data, ['is_active' => true, 'images' => []]),
+                array_merge($data, ['is_active' => true]),
             );
 
             $services = $commonServices;

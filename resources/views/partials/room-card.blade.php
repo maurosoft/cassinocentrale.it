@@ -1,5 +1,5 @@
 @php($topServices = $room->services->take(4))
-<article class="card flex flex-col">
+<article class="card card-lift flex flex-col" data-reveal>
     <a href="{{ route('rooms.show', $room) }}" class="block aspect-[4/3] overflow-hidden bg-cream-200">
         <img src="{{ \Illuminate\Support\Str::startsWith($room->coverImage(), ['http', '/']) ? $room->coverImage() : asset($room->coverImage()) }}"
              alt="Camera {{ $room->number_name }}"

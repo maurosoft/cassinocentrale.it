@@ -84,11 +84,12 @@ class PlaceSeeder extends Seeder
             );
         }
 
-        // --- Attività convenzionate ---
+        // --- Negozi e attività locali (con convenzioni) ---
         $conventions = [
             [
                 'name' => 'Ristorante da esempio',
                 'category' => 'servizi',
+                'type' => 'ristorante',
                 'description' => 'Cucina tipica ciociara a pochi passi dal B&B.',
                 'convention_description' => 'Sconto del 10% sul conto per i nostri ospiti, mostrando la conferma di prenotazione.',
                 'distance_walking' => '3 min a piedi',
@@ -96,6 +97,7 @@ class PlaceSeeder extends Seeder
             [
                 'name' => 'Caffetteria del Corso',
                 'category' => 'servizi',
+                'type' => 'bar',
                 'description' => 'Bar storico per colazioni e aperitivi.',
                 'convention_description' => 'Caffè omaggio con la colazione per gli ospiti del B&B.',
                 'distance_walking' => '2 min a piedi',
@@ -103,8 +105,33 @@ class PlaceSeeder extends Seeder
             [
                 'name' => 'Bottega dei sapori',
                 'category' => 'servizi',
+                'type' => 'negozio',
                 'description' => 'Prodotti tipici locali e souvenir enogastronomici.',
                 'convention_description' => 'Sconto del 5% sugli acquisti per i nostri ospiti.',
+                'distance_walking' => '5 min a piedi',
+            ],
+            [
+                'name' => 'Pizzeria del Centro',
+                'category' => 'servizi',
+                'type' => 'ristorante',
+                'description' => 'Pizza cotta a legna, forno tradizionale nel cuore di Cassino.',
+                'convention_description' => 'Bibita in omaggio per gli ospiti del B&B.',
+                'distance_walking' => '4 min a piedi',
+            ],
+            [
+                'name' => 'Gelateria Artigianale',
+                'category' => 'servizi',
+                'type' => 'bar',
+                'description' => 'Gelato artigianale con gusti di stagione.',
+                'convention_description' => 'Cono/coppetta piccola a prezzo speciale per i nostri ospiti.',
+                'distance_walking' => '6 min a piedi',
+            ],
+            [
+                'name' => 'Boutique Moda Cassino',
+                'category' => 'servizi',
+                'type' => 'negozio',
+                'description' => 'Abbigliamento e accessori nel centro cittadino.',
+                'convention_description' => 'Sconto del 10% sul primo acquisto per gli ospiti del B&B.',
                 'distance_walking' => '5 min a piedi',
             ],
         ];
