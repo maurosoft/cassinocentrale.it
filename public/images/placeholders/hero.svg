@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Immagine del B&amp;B in arrivo">
+  <rect width="1600" height="900" fill="#b85c38"/>
+  <rect y="600" width="1600" height="300" fill="#9e4a2c"/>
+  <g opacity="0.35" fill="#faf4ea">
+    <path d="M300 600V360l160-120 160 120v240z"/>
+    <path d="M980 600V300l200-150 200 150v300z"/>
+  </g>
+  <g opacity="0.2" fill="#faf4ea">
+    <circle cx="1300" cy="180" r="90"/>
+  </g>
+</svg>

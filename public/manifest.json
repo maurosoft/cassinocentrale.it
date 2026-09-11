@@ -1,0 +1,32 @@
+{
+    "name": "B&B Cassino Centrale",
+    "short_name": "Cassino Centrale",
+    "description": "Soggiorna nel cuore di Cassino, tutto a portata di mano.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#faf4ea",
+    "theme_color": "#b85c38",
+    "lang": "it",
+    "icons": [
+        {
+            "src": "/icons/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}

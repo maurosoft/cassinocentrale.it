@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="B&amp;B Cassino Centrale">
+  <rect width="512" height="512" rx="96" fill="#b85c38"/>
+  <g fill="none" stroke="#faf4ea" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 96 108 214v190a16 16 0 0 0 16 16h264a16 16 0 0 0 16-16V214z"/>
+    <path d="M96 224l160-128 160 128"/>
+  </g>
+  <text x="256" y="360" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="150" font-weight="700" fill="#faf4ea">CC</text>
+</svg>

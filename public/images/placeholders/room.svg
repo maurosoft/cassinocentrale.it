@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Foto camera in arrivo">
+  <rect width="800" height="600" fill="#f3e9d6"/>
+  <rect x="150" y="330" width="500" height="150" rx="10" fill="#e7b699"/>
+  <rect x="180" y="250" width="180" height="120" rx="8" fill="#dcc39c"/>
+  <rect x="440" y="250" width="180" height="120" rx="8" fill="#dcc39c"/>
+  <path d="M120 330h560" stroke="#b85c38" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="400" cy="180" r="42" fill="#cf7346"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#8f4429">Foto in arrivo</text>
+</svg>
