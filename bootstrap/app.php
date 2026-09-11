@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,8 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Middleware globali e alias verranno aggiunti nelle fasi successive
-        // (es. controllo ruoli admin in Fase 2).
+        // Alias del controllo ruoli, usabile nelle rotte come 'role:superadmin'.
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
+        ]);
+
+        // Gli utenti non autenticati vengono mandati alla pagina di login admin.
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
