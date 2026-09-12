@@ -36,9 +36,9 @@ class AvailabilityService
     }
 
     /** Vero se la camera è libera per tutto il periodo richiesto. */
-    public function isRoomAvailable(Room $room, Carbon $checkIn, Carbon $checkOut): bool
+    public function isRoomAvailable(Room $room, Carbon $checkIn, Carbon $checkOut, ?int $ignoreBookingId = null): bool
     {
-        if ($this->hasOverlappingBooking($room->id, $checkIn, $checkOut)) {
+        if ($this->hasOverlappingBooking($room->id, $checkIn, $checkOut, $ignoreBookingId)) {
             return false;
         }
 
@@ -49,9 +49,10 @@ class AvailabilityService
         return true;
     }
 
-    private function hasOverlappingBooking(int $roomId, Carbon $checkIn, Carbon $checkOut): bool
+    private function hasOverlappingBooking(int $roomId, Carbon $checkIn, Carbon $checkOut, ?int $ignoreBookingId = null): bool
     {
         return BookingRoom::where('room_id', $roomId)
+            ->when($ignoreBookingId, fn ($q) => $q->where('booking_id', '!=', $ignoreBookingId))
             ->whereHas('booking', function ($q) use ($checkIn, $checkOut) {
                 $q->whereIn('status', self::BLOCKING_STATUSES)
                     ->whereDate('check_in', '<', $checkOut)

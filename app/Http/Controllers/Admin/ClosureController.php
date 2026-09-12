@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
+use App\Models\BookingRoom;
 use App\Models\Room;
 use App\Models\RoomClosure;
 use Illuminate\Contracts\View\View;
@@ -32,6 +34,28 @@ class ClosureController extends Controller
         ]);
 
         $data['room_id'] = $data['room_id'] ?: null;
+
+        // Blocco la chiusura se nel periodo ci sono già prenotazioni (per la camera o per tutte).
+        $conflicts = BookingRoom::query()
+            ->when($data['room_id'], fn ($q) => $q->where('room_id', $data['room_id']))
+            ->whereHas('booking', function ($q) use ($data) {
+                $q->whereIn('status', [Booking::STATUS_DRAFT, Booking::STATUS_CONFIRMED, Booking::STATUS_COMPLETED])
+                    ->whereDate('check_in', '<=', $data['end_date'])
+                    ->whereDate('check_out', '>', $data['start_date']);
+            })
+            ->with('booking:id,guest_name,check_in,check_out', 'room:id,number_name')
+            ->get();
+
+        if ($conflicts->isNotEmpty()) {
+            $list = $conflicts->map(fn ($br) => trim(
+                ($br->room?->number_name ? 'Camera '.$br->room->number_name.' — ' : '').
+                $br->booking?->guest_name.' ('.$br->booking?->check_in->format('d/m').'→'.$br->booking?->check_out->format('d/m').')'
+            ))->unique()->take(5)->implode('; ');
+
+            return back()->withInput()->with('error',
+                'Non puoi chiudere questo periodo: ci sono già prenotazioni. '.$list.
+                '. Prima sposta o annulla le prenotazioni interessate.');
+        }
 
         RoomClosure::create($data);
 

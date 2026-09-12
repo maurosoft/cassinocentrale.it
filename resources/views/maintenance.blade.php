@@ -12,11 +12,11 @@
 </head>
 <body class="min-h-screen bg-cream-100">
     {{-- Sfondo: foto della struttura, sfumata --}}
-    <div class="fixed inset-0 -z-10 bg-cover bg-center" style="background-image:url('/images/rooms/hero.jpg'); opacity:0.18;" aria-hidden="true"></div>
-    <div class="fixed inset-0 -z-10 bg-gradient-to-b from-cream-100/70 via-cream-100/85 to-cream-100" aria-hidden="true"></div>
+    <div class="fixed inset-0 -z-10 bg-cover bg-center" style="background-image:url('/images/rooms/hero.jpg');" aria-hidden="true"></div>
+    <div class="fixed inset-0 -z-10 bg-gradient-to-b from-ink/40 via-ink/30 to-ink/55" aria-hidden="true"></div>
 
     <div class="relative flex min-h-screen items-center justify-center px-4 py-12 text-center">
-        <div class="max-w-lg rounded-3xl bg-white/70 p-8 backdrop-blur-sm">
+        <div class="max-w-lg rounded-3xl bg-white/85 p-8 shadow-xl backdrop-blur-sm">
             <img src="/icons/icon.svg" alt="" class="mx-auto h-16 w-16">
             <h1 class="mt-6 font-serif text-3xl font-semibold text-clay-700">Torniamo subito</h1>
             <p class="mt-3 text-ink-light">

@@ -21,18 +21,12 @@
             <p class="mt-1 text-sm text-ink-light">Scegli un cliente già registrato oppure inserisci i dati di uno nuovo.</p>
 
             @if ($customers->isNotEmpty())
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-ink">Cliente esistente</label>
-                    <select id="existing-customer" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
-                        <option value="">— Nuovo cliente —</option>
-                        @foreach ($customers as $c)
-                            <option value="{{ $c->id }}"
-                                data-first="{{ $c->first_name }}" data-last="{{ $c->last_name }}"
-                                data-email="{{ $c->email }}" data-phone="{{ $c->phone }}">
-                                {{ $c->fullName() }}@if ($c->email) — {{ $c->email }}@endif
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="relative mt-4">
+                    <label class="block text-sm font-medium text-ink">Cerca cliente esistente</label>
+                    <input type="text" id="customer-search" autocomplete="off" placeholder="Digita nome, email o telefono..."
+                           class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                    <div id="customer-results" class="absolute z-20 mt-1 hidden max-h-56 w-full overflow-auto rounded-lg border border-cream-300 bg-white shadow-lg"></div>
+                    <p class="mt-1 text-xs text-ink-soft">Oppure lascia vuoto e compila i campi qui sotto per un cliente nuovo.</p>
                 </div>
             @endif
 
@@ -111,14 +105,51 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const sel = document.getElementById('existing-customer');
-            if (!sel) return;
-            sel.addEventListener('change', () => {
-                const o = sel.options[sel.selectedIndex];
-                document.getElementById('cust-first').value = o.dataset.first || '';
-                document.getElementById('cust-last').value = o.dataset.last || '';
-                document.getElementById('cust-email').value = o.dataset.email || '';
-                document.getElementById('cust-phone').value = o.dataset.phone || '';
+            const search = document.getElementById('customer-search');
+            const results = document.getElementById('customer-results');
+            if (!search || !results) return;
+
+            const customers = @json($customers->map(fn ($c) => [
+                'first' => $c->first_name, 'last' => $c->last_name,
+                'email' => $c->email, 'phone' => $c->phone,
+                'label' => trim($c->fullName().' '.($c->email ?: '').' '.($c->phone ?: '')),
+            ])->values());
+
+            const fill = (c) => {
+                document.getElementById('cust-first').value = c.first || '';
+                document.getElementById('cust-last').value = c.last || '';
+                document.getElementById('cust-email').value = c.email || '';
+                document.getElementById('cust-phone').value = c.phone || '';
+            };
+
+            const render = (list) => {
+                if (!list.length) { results.classList.add('hidden'); return; }
+                results.innerHTML = list.slice(0, 8).map((c, i) =>
+                    `<button type="button" data-i="${i}" class="block w-full px-3 py-2 text-left text-sm hover:bg-cream-100">
+                        <span class="font-medium text-ink">${(c.first || '') + ' ' + (c.last || '')}</span>
+                        ${c.email ? `<span class="block text-xs text-ink-soft">${c.email}</span>` : ''}
+                    </button>`).join('');
+                results.dataset.list = JSON.stringify(list.slice(0, 8));
+                results.classList.remove('hidden');
+            };
+
+            search.addEventListener('input', () => {
+                const q = search.value.trim().toLowerCase();
+                if (q.length < 2) { results.classList.add('hidden'); return; }
+                render(customers.filter((c) => c.label.toLowerCase().includes(q)));
+            });
+
+            results.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-i]');
+                if (!btn) return;
+                const list = JSON.parse(results.dataset.list || '[]');
+                const c = list[parseInt(btn.dataset.i, 10)];
+                if (c) { fill(c); search.value = (c.first || '') + ' ' + (c.last || ''); }
+                results.classList.add('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!results.contains(e.target) && e.target !== search) results.classList.add('hidden');
             });
         });
     </script>

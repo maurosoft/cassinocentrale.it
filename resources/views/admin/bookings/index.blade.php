@@ -12,11 +12,11 @@
     <form method="GET" class="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-cream-300 bg-white p-4">
         <div>
             <label class="block text-xs font-medium text-ink-soft">Cerca</label>
-            <input name="q" value="{{ request('q') }}" class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500" placeholder="Nome, email, codice">
+            <input name="q" value="{{ request('q') }}" data-autofilter class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500" placeholder="Nome, email, codice">
         </div>
         <div>
             <label class="block text-xs font-medium text-ink-soft">Stato</label>
-            <select name="status" class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500">
+            <select name="status" onchange="this.form.submit()" class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500">
                 <option value="">Tutti</option>
                 @foreach (\App\Models\Booking::STATUSES as $key => $label)
                     <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
@@ -25,7 +25,7 @@
         </div>
         <div>
             <label class="block text-xs font-medium text-ink-soft">Camera</label>
-            <select name="room" class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500">
+            <select name="room" onchange="this.form.submit()" class="mt-1 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500">
                 <option value="">Tutte</option>
                 @foreach ($rooms as $room)
                     <option value="{{ $room->id }}" @selected(request('room') == $room->id)>{{ $room->number_name }}</option>
@@ -82,4 +82,17 @@
     </div>
 
     <div class="mt-4">{{ $bookings->links() }}</div>
+
+    <script>
+        // Ricerca "mentre digiti" (con piccolo ritardo) e filtri immediati.
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.querySelector('[data-autofilter]');
+            if (!input) return;
+            let t;
+            input.addEventListener('input', () => {
+                clearTimeout(t);
+                t = setTimeout(() => input.form.submit(), 450);
+            });
+        });
+    </script>
 @endsection

@@ -74,7 +74,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('bookings/create', [Admin\BookingController::class, 'create'])->name('bookings.create');
             Route::post('bookings', [Admin\BookingController::class, 'store'])->name('bookings.store');
             Route::get('bookings/{booking}', [Admin\BookingController::class, 'show'])->name('bookings.show');
+            Route::get('bookings/{booking}/edit', [Admin\BookingController::class, 'edit'])->name('bookings.edit');
             Route::put('bookings/{booking}', [Admin\BookingController::class, 'update'])->name('bookings.update');
+            Route::patch('bookings/{booking}/status', [Admin\BookingController::class, 'statusUpdate'])->name('bookings.status');
+
+            Route::get('customers', [Admin\CustomerController::class, 'index'])->name('customers.index');
+            Route::get('customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
 
             Route::get('calendar', [Admin\CalendarController::class, 'index'])->name('calendar.index');
 

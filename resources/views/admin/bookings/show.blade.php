@@ -3,14 +3,17 @@
 @section('title', 'Prenotazione · '.$booking->guest_name)
 
 @section('content')
-    <a href="{{ route('admin.bookings.index') }}" class="mb-4 inline-flex items-center gap-1.5 text-sm text-ink-light hover:text-clay-600"><x-icon name="arrow-left" class="h-4 w-4"/> Torna alle prenotazioni</a>
+    <div class="mb-4 flex items-center justify-between">
+        <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center gap-1.5 text-sm text-ink-light hover:text-clay-600"><x-icon name="arrow-left" class="h-4 w-4"/> Torna alle prenotazioni</a>
+        <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn-primary !py-2"><x-icon name="edit" class="h-4 w-4"/> Modifica prenotazione</a>
+    </div>
 
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="space-y-5 lg:col-span-2">
             <div class="rounded-2xl border border-cream-300 bg-white p-5">
                 <h2 class="font-serif text-lg text-ink">Ospite</h2>
                 <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-                    <div><dt class="text-ink-soft">Nome</dt><dd class="font-medium text-ink">{{ $booking->guest_name }}</dd></div>
+                    <div><dt class="text-ink-soft">Nome</dt><dd class="font-medium text-ink">@if ($booking->customer)<a href="{{ route('admin.customers.show', $booking->customer) }}" class="text-clay-600 hover:text-clay-700">{{ $booking->guest_name }}</a>@else{{ $booking->guest_name }}@endif</dd></div>
                     <div><dt class="text-ink-soft">Codice</dt><dd class="font-medium text-ink">{{ $booking->reference ?? '—' }}</dd></div>
                     <div><dt class="text-ink-soft">Email</dt><dd class="text-ink">{{ $booking->guest_email ?? '—' }}</dd></div>
                     <div><dt class="text-ink-soft">Telefono</dt><dd class="text-ink">{{ $booking->guest_phone ?? '—' }}</dd></div>
@@ -52,9 +55,9 @@
 
         {{-- Gestione stato --}}
         <div class="space-y-5">
-            <form method="POST" action="{{ route('admin.bookings.update', $booking) }}" class="rounded-2xl border border-cream-300 bg-white p-5">
-                @csrf @method('PUT')
-                <h2 class="font-serif text-lg text-ink">Gestione</h2>
+            <form method="POST" action="{{ route('admin.bookings.status', $booking) }}" class="rounded-2xl border border-cream-300 bg-white p-5">
+                @csrf @method('PATCH')
+                <h2 class="font-serif text-lg text-ink">Gestione rapida</h2>
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-ink">Stato prenotazione</label>
                     <select name="status" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">

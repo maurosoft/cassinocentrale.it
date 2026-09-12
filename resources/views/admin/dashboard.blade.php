@@ -5,24 +5,34 @@
 @section('content')
     <p class="text-sm text-ink-light">Ciao {{ auth()->user()->name }}, ecco la situazione di oggi ({{ now()->translatedFormat('d F Y') }}).</p>
 
-    {{-- Numeri principali --}}
+    @php($canOps = auth()->user()->isSuperadmin() || auth()->user()->hasRole('reception'))
+
+    {{-- Numeri principali (cliccabili) --}}
     <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         @php($cards = [
-            ['label' => 'Arrivi oggi', 'value' => $stats['arrivals_today'], 'icon' => 'calendar'],
-            ['label' => 'Partenze oggi', 'value' => $stats['departures_today'], 'icon' => 'external'],
-            ['label' => 'Camere occupate', 'value' => $stats['occupied'].' / '.$stats['total_rooms'], 'icon' => 'bed'],
-            ['label' => 'Camere libere', 'value' => $stats['free'], 'icon' => 'check'],
+            ['label' => 'Arrivi oggi', 'value' => $stats['arrivals_today'], 'icon' => 'calendar', 'to' => $canOps ? route('admin.bookings.index') : null],
+            ['label' => 'Partenze oggi', 'value' => $stats['departures_today'], 'icon' => 'external', 'to' => $canOps ? route('admin.bookings.index') : null],
+            ['label' => 'Camere occupate', 'value' => $stats['occupied'].' / '.$stats['total_rooms'], 'icon' => 'bed', 'to' => $canOps ? route('admin.calendar.index') : null],
+            ['label' => 'Camere libere', 'value' => $stats['free'], 'icon' => 'check', 'to' => $canOps ? route('admin.calendar.index') : null],
         ])
         @foreach ($cards as $c)
-            <div class="rounded-2xl border border-cream-300 bg-white p-5">
+            <{{ $c['to'] ? 'a' : 'div' }} @if ($c['to']) href="{{ $c['to'] }}" @endif class="block rounded-2xl border border-cream-300 bg-white p-5 {{ $c['to'] ? 'transition hover:border-clay-300 hover:shadow-md' : '' }}">
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-ink-soft">{{ $c['label'] }}</span>
                     <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-clay-50 text-clay-600"><x-icon :name="$c['icon']" class="h-5 w-5"/></span>
                 </div>
                 <p class="mt-3 font-serif text-3xl font-semibold text-ink">{{ $c['value'] }}</p>
-            </div>
+            </{{ $c['to'] ? 'a' : 'div' }}>
         @endforeach
     </div>
+
+    @if ($canOps)
+        <div class="mt-4 flex flex-wrap gap-2">
+            <a href="{{ route('admin.bookings.create') }}" class="btn-primary !py-2"><x-icon name="plus" class="h-4 w-4"/> Nuova prenotazione</a>
+            <a href="{{ route('admin.calendar.index') }}" class="btn-outline !py-2">Apri il calendario</a>
+            <a href="{{ route('admin.customers.index') }}" class="btn-ghost !py-2">Clienti</a>
+        </div>
+    @endif
 
     {{-- Occupazione + periodi --}}
     <div class="mt-4 grid gap-4 lg:grid-cols-3">
