@@ -44,10 +44,14 @@ class BookingController extends Controller
                     $fits = $room->max_guests >= $guests;
                     $free = $fits && $this->availability->isRoomAvailable($room, $checkIn, $checkOut);
 
+                    // Se occupata, calcoliamo il periodo per mostrare "Occupata dal … al …"
+                    $conflict = (! $free && $fits) ? $this->availability->conflictRange($room, $checkIn, $checkOut) : null;
+
                     return [
                         'room' => $room,
                         'available' => $free,
                         'fits' => $fits,
+                        'conflict' => $conflict,
                         'quote' => $free ? $this->pricing->quote($room, $nights, $guests) : null,
                     ];
                 });

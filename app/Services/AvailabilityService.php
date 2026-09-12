@@ -61,6 +61,51 @@ class AvailabilityService
             ->exists();
     }
 
+    /**
+     * Restituisce il primo periodo di occupazione (prenotazione o chiusura) che
+     * si sovrappone all'intervallo richiesto, per mostrare "Occupata dal … al …".
+     *
+     * @return array{from:Carbon, to:Carbon, type:string}|null
+     */
+    public function conflictRange(Room $room, Carbon $checkIn, Carbon $checkOut): ?array
+    {
+        $bookingRoom = BookingRoom::where('room_id', $room->id)
+            ->whereHas('booking', function ($q) use ($checkIn, $checkOut) {
+                $q->whereIn('status', self::BLOCKING_STATUSES)
+                    ->whereDate('check_in', '<', $checkOut)
+                    ->whereDate('check_out', '>', $checkIn);
+            })
+            ->with('booking:id,check_in,check_out')
+            ->get()
+            ->sortBy(fn ($br) => $br->booking?->check_in)
+            ->first();
+
+        if ($bookingRoom && $bookingRoom->booking) {
+            return [
+                'from' => $bookingRoom->booking->check_in,
+                'to' => $bookingRoom->booking->check_out,
+                'type' => 'booking',
+            ];
+        }
+
+        $closure = RoomClosure::query()
+            ->where(fn ($q) => $q->whereNull('room_id')->orWhere('room_id', $room->id))
+            ->whereDate('start_date', '<', $checkOut)
+            ->whereDate('end_date', '>=', $checkIn)
+            ->orderBy('start_date')
+            ->first();
+
+        if ($closure) {
+            return [
+                'from' => $closure->start_date,
+                'to' => $closure->end_date->copy()->addDay(), // end_date è l'ultima notte chiusa
+                'type' => 'closure',
+            ];
+        }
+
+        return null;
+    }
+
     /** Chiusure che coprono il periodo (per la camera o per tutto il B&B). */
     private function isClosed(int $roomId, Carbon $checkIn, Carbon $checkOut): bool
     {

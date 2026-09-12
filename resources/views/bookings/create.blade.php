@@ -93,9 +93,16 @@
                                         {{ $selectedRoom && $selectedRoom->id === $room->id ? 'Camera scelta ✓' : 'Prenota' }}
                                     </a>
                                 @else
-                                    <p class="mt-4 rounded-xl bg-cream-50 p-3 text-center text-sm text-ink-soft">
-                                        {{ $entry['fits'] ? 'Non disponibile per queste date.' : 'Adatta fino a '.$room->max_guests.' ospiti.' }}
-                                    </p>
+                                    <div class="mt-4 rounded-xl bg-cream-50 p-3 text-center text-sm text-ink-soft">
+                                        @if (! $entry['fits'])
+                                            Adatta fino a {{ $room->max_guests }} ospiti.
+                                        @elseif ($entry['conflict'])
+                                            <p class="font-medium text-ink">Occupata dal {{ $entry['conflict']['from']->format('d/m') }} al {{ $entry['conflict']['to']->format('d/m') }}</p>
+                                            <p class="mt-1 text-xs">Prova altre date o un'altra camera.</p>
+                                        @else
+                                            Non disponibile per queste date.
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                         </article>
