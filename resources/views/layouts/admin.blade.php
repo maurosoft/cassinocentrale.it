@@ -21,6 +21,7 @@
         ['label' => 'Calendario', 'route' => 'admin.calendar.index', 'active' => 'admin.calendar.*', 'icon' => 'calendar', 'roles' => ['superadmin','reception']],
         ['label' => 'Chiusure', 'route' => 'admin.closures.index', 'active' => 'admin.closures.*', 'icon' => 'x', 'roles' => ['superadmin','reception']],
         ['label' => 'Clienti', 'route' => 'admin.customers.index', 'active' => 'admin.customers.*', 'icon' => 'users', 'roles' => ['superadmin','reception']],
+        ['label' => 'Log email', 'route' => 'admin.logs.email', 'active' => 'admin.logs.*', 'icon' => 'mail', 'roles' => ['superadmin','reception']],
         ['label' => 'Camere', 'route' => 'admin.rooms.index', 'active' => 'admin.rooms.*', 'icon' => 'bed', 'roles' => ['superadmin','reception','editor']],
         ['label' => 'Servizi', 'route' => 'admin.services.index', 'active' => 'admin.services.*', 'icon' => 'sparkles', 'roles' => ['superadmin','reception','editor']],
         ['label' => 'Luoghi & Negozi', 'route' => 'admin.places.index', 'active' => 'admin.places.*', 'icon' => 'pin', 'roles' => ['superadmin','editor']],

@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Room;
 use App\Services\AvailabilityService;
+use App\Services\NotificationService;
 use App\Services\PricingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,7 @@ class BookingController extends Controller
     public function __construct(
         private readonly AvailabilityService $availability,
         private readonly PricingService $pricing,
+        private readonly NotificationService $notifier,
     ) {}
 
     /** Pagina "Prenota": ricerca disponibilità, scelta camere e form ospite. */
@@ -139,7 +141,8 @@ class BookingController extends Controller
             ]);
         }
 
-        // NB: l'invio automatico di email/WhatsApp arriverà in Fase 4.
+        // Notifiche (email ora, WhatsApp in Fase 4b) — rispettano i toggle admin.
+        $this->notifier->bookingCreated($booking);
 
         return redirect()->route('booking.confirmation', $booking->reference);
     }

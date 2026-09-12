@@ -87,6 +87,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('customers', [Admin\CustomerController::class, 'index'])->name('customers.index');
             Route::get('customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
 
+            Route::get('logs/email', [Admin\LogController::class, 'email'])->name('logs.email');
+
             Route::get('calendar', [Admin\CalendarController::class, 'index'])->name('calendar.index');
 
             Route::get('closures', [Admin\ClosureController::class, 'index'])->name('closures.index');
@@ -99,6 +101,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('users', Admin\UserController::class)->except('show');
             Route::post('settings/maintenance', [Admin\SettingsController::class, 'maintenance'])->name('settings.maintenance');
             Route::post('settings/notifications', [Admin\SettingsController::class, 'notifications'])->name('settings.notifications');
+            Route::post('settings/smtp', [Admin\SettingsController::class, 'smtp'])->name('settings.smtp');
+            Route::post('settings/test-email', [Admin\SettingsController::class, 'testEmail'])->name('settings.testEmail');
         });
     });
 });

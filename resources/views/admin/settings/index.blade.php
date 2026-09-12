@@ -140,6 +140,71 @@
                 <button type="submit" class="btn-primary !py-2.5">Salva notifiche</button>
             </form>
         </div>
+
+        {{-- Email / SMTP --}}
+        @php($smtp = fn ($k, $d = '') => \App\Support\Settings::get('smtp.'.$k, $d))
+        <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">
+            <h2 class="font-serif text-lg text-ink">Email (SMTP)</h2>
+            <p class="mt-1 text-sm text-ink-light">Dati del server di posta per inviare le email (conferme, ecc.). Se non li hai, chiedili al tuo provider di posta o hosting.</p>
+
+            <form method="POST" action="{{ route('admin.settings.smtp') }}" class="mt-4 grid gap-4 sm:grid-cols-2">
+                @csrf
+                <div>
+                    <label class="block text-sm font-medium text-ink">Server (host)</label>
+                    <input name="host" value="{{ $smtp('host') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="smtp.tuoprovider.it">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-ink">Porta</label>
+                        <input name="port" type="number" value="{{ $smtp('port', 587) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-ink">Sicurezza</label>
+                        <select name="encryption" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                            @foreach (['tls' => 'TLS', 'ssl' => 'SSL', 'none' => 'Nessuna'] as $val => $lbl)
+                                <option value="{{ $val }}" @selected($smtp('encryption', 'tls') === $val)>{{ $lbl }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Utente</label>
+                    <input name="username" value="{{ $smtp('username') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="info@cassinocentrale.it">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Password</label>
+                    <input name="password" type="password" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="•••••• (lascia vuoto per non cambiarla)">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Mittente: email</label>
+                    <input name="from_email" value="{{ $smtp('from_email') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="info@cassinocentrale.it">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Mittente: nome</label>
+                    <input name="from_name" value="{{ $smtp('from_name', 'B&B Cassino Centrale') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-ink">Email dello staff (dove ricevere le notifiche)</label>
+                    <input name="admin_email" value="{{ \App\Support\Settings::get('notify.admin_email', config('bnb.contact.email')) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
+                <label class="flex items-center gap-2 text-sm text-ink sm:col-span-2">
+                    <input type="checkbox" name="enabled" value="1" @checked($smtp('enabled')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500">
+                    Attiva l'invio email tramite questo server
+                </label>
+                <div class="sm:col-span-2">
+                    <button type="submit" class="btn-primary !py-2.5">Salva impostazioni email</button>
+                </div>
+            </form>
+
+            <form method="POST" action="{{ route('admin.settings.testEmail') }}" class="mt-4 flex flex-wrap items-end gap-3 border-t border-cream-200 pt-4">
+                @csrf
+                <div>
+                    <label class="block text-sm font-medium text-ink">Invia email di prova a</label>
+                    <input name="test_email" type="email" required value="{{ config('bnb.contact.email') }}" class="mt-1 w-72 max-w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
+                <button type="submit" class="btn-outline !py-2.5">Invia test</button>
+            </form>
+        </div>
     @endif
 
     <form method="POST" action="{{ route('admin.settings.update') }}">

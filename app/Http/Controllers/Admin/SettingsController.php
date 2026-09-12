@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Services\NotificationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class SettingsController extends Controller
     ];
 
     /** Gruppi gestiti con schede dedicate (non nel form generico). */
-    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche', 'prezzi'];
+    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche', 'prezzi', 'smtp'];
 
     public function index(): View
     {
@@ -49,6 +50,58 @@ class SettingsController extends Controller
         );
 
         return redirect()->route('admin.settings.index')->with('success', 'Logo aggiornato.');
+    }
+
+    /** Salva la configurazione SMTP (email in uscita). */
+    public function smtp(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'host' => ['nullable', 'string', 'max:150'],
+            'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
+            'username' => ['nullable', 'string', 'max:150'],
+            'password' => ['nullable', 'string', 'max:255'],
+            'encryption' => ['nullable', 'in:tls,ssl,none'],
+            'from_email' => ['nullable', 'email', 'max:150'],
+            'from_name' => ['nullable', 'string', 'max:120'],
+            'admin_email' => ['nullable', 'email', 'max:150'],
+        ]);
+
+        $values = [
+            'smtp.host' => ['value' => $data['host'] ?? '', 'group' => 'smtp', 'type' => 'string'],
+            'smtp.port' => ['value' => (string) ($data['port'] ?? 587), 'group' => 'smtp', 'type' => 'integer'],
+            'smtp.username' => ['value' => $data['username'] ?? '', 'group' => 'smtp', 'type' => 'string'],
+            'smtp.encryption' => ['value' => $data['encryption'] ?? 'tls', 'group' => 'smtp', 'type' => 'string'],
+            'smtp.from_email' => ['value' => $data['from_email'] ?? '', 'group' => 'smtp', 'type' => 'string'],
+            'smtp.from_name' => ['value' => $data['from_name'] ?? '', 'group' => 'smtp', 'type' => 'string'],
+            'smtp.enabled' => ['value' => $request->boolean('enabled') ? '1' : '0', 'group' => 'smtp', 'type' => 'boolean'],
+            'notify.admin_email' => ['value' => $data['admin_email'] ?? '', 'group' => 'notifiche', 'type' => 'string'],
+        ];
+
+        foreach ($values as $key => $v) {
+            SiteSetting::updateOrCreate(['key' => $key], $v);
+        }
+
+        // La password si aggiorna solo se inserita (altrimenti resta quella salvata).
+        if (! empty($data['password'])) {
+            SiteSetting::updateOrCreate(['key' => 'smtp.password'], ['value' => $data['password'], 'type' => 'string', 'group' => 'smtp']);
+        }
+
+        return redirect()->route('admin.settings.index')->with('success', 'Impostazioni email salvate.');
+    }
+
+    /** Invia un'email di prova. */
+    public function testEmail(Request $request, NotificationService $notifier): RedirectResponse
+    {
+        $data = $request->validate(['test_email' => ['required', 'email']]);
+
+        $ok = $notifier->sendTest($data['test_email']);
+
+        return redirect()->route('admin.settings.index')->with(
+            $ok ? 'success' : 'error',
+            $ok
+                ? 'Email di test inviata a '.$data['test_email'].' — controlla la casella.'
+                : 'Invio non riuscito: verifica i dati SMTP. Il dettaglio dell\'errore è nei Log email.'
+        );
     }
 
     /** Carica/aggiorna la favicon (icona nella scheda del browser). */

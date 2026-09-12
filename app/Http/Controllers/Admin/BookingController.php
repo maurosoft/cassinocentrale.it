@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Room;
 use App\Services\AvailabilityService;
+use App\Services\NotificationService;
 use App\Services\PricingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,7 @@ class BookingController extends Controller
     public function __construct(
         private readonly AvailabilityService $availability,
         private readonly PricingService $pricing,
+        private readonly NotificationService $notifier,
     ) {}
 
     public function index(Request $request): View
@@ -136,7 +138,7 @@ class BookingController extends Controller
             'subtotal' => $quote['subtotal'],
         ]);
 
-        // NB: l'invio automatico delle notifiche al cliente arriverà nella Fase 4.
+        $this->notifier->bookingCreated($booking);
 
         return redirect()->route('admin.bookings.show', $booking)->with('success', 'Prenotazione creata.');
     }
@@ -151,7 +153,9 @@ class BookingController extends Controller
     /** Elimina definitivamente la prenotazione. */
     public function destroy(Booking $booking): RedirectResponse
     {
-        // NB: l'eventuale notifica di annullamento al cliente arriverà nella Fase 4.
+        // Notifica di annullamento PRIMA di eliminare (poi i dati non ci sono più).
+        $this->notifier->bookingCancelled($booking);
+
         $booking->delete(); // le camere collegate (booking_rooms) sono rimosse a cascata
 
         return redirect()->route('admin.bookings.index')->with('success', 'Prenotazione eliminata.');
@@ -247,7 +251,7 @@ class BookingController extends Controller
             'subtotal' => $quote['subtotal'],
         ]);
 
-        // NB: la notifica automatica della modifica al cliente arriverà nella Fase 4.
+        $this->notifier->bookingUpdated($booking);
 
         return redirect()->route('admin.bookings.show', $booking)->with('success', 'Prenotazione modificata.');
     }

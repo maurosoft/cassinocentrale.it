@@ -3,8 +3,8 @@
 @section('content')
     {{-- ===================== HERO ===================== --}}
     <section class="relative isolate overflow-hidden">
-        <img src="{{ asset('images/rooms/hero.jpg') }}" alt="" data-parallax
-             class="absolute left-0 top-[-25%] -z-10 h-[150%] w-full object-cover" aria-hidden="true">
+        <img src="{{ asset('images/rooms/hero.jpg') }}" alt=""
+             class="absolute inset-0 -z-10 h-full w-full object-cover" aria-hidden="true">
         <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/45 to-ink/70"></div>
 
         <div class="container-bnb flex min-h-[74vh] flex-col items-center justify-center py-24 text-center text-cream-50">
@@ -97,6 +97,19 @@
             </div>
         </section>
     @endif
+
+    {{-- ===================== FASCIA PARALLAX ===================== --}}
+    <section class="relative isolate overflow-hidden">
+        <img src="{{ asset('images/rooms/room-102.jpg') }}" alt="" data-parallax
+             class="absolute left-0 top-[-25%] -z-10 h-[150%] w-full object-cover" aria-hidden="true">
+        <div class="absolute inset-0 -z-10 bg-ink/55"></div>
+        <div class="container-bnb flex min-h-[55vh] flex-col items-center justify-center py-20 text-center text-cream-50">
+            <span class="eyebrow text-shadow-soft text-cream-100">Un soggiorno di charme</span>
+            <h2 class="mt-3 max-w-2xl text-shadow-soft font-serif text-3xl font-semibold sm:text-4xl">Il calore di una casa, nel cuore di Cassino</h2>
+            <p class="mt-4 max-w-xl text-shadow-soft text-cream-100/95">Camere curate, colazione genuina e la città a portata di mano.</p>
+            <a href="{{ route('booking.create') }}" class="btn-primary mt-8 shadow-xl shadow-clay-900/30">Prenota il tuo soggiorno</a>
+        </div>
+    </section>
 
     {{-- ===================== ANTEPRIMA SCOPRI CASSINO ===================== --}}
     <section class="bg-sage-50 py-20">
