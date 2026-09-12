@@ -22,8 +22,8 @@ class SettingsController extends Controller
     public function index(): View
     {
         $groups = SiteSetting::orderBy('group')->orderBy('key')->get()
-            ->groupBy('group')
-            ->except('manutenzione'); // gestita a parte con la scheda dedicata
+            ->reject(fn (SiteSetting $s) => $s->group === 'manutenzione') // gestita a parte con la scheda dedicata
+            ->groupBy('group');
         $labels = self::GROUP_LABELS;
 
         return view('admin.settings.index', compact('groups', 'labels'));
