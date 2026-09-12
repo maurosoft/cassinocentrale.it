@@ -62,6 +62,13 @@
                     @endif
                 </div>
 
+                @if ($roomsNeeded > 1)
+                    <div class="mt-3 flex items-start gap-2 rounded-xl bg-clay-50 p-3 text-sm text-clay-700">
+                        <x-icon name="sparkles" class="mt-0.5 h-4 w-4 shrink-0"/>
+                        <span>Le camere sono tutte matrimoniali: per <strong>{{ $guests }} ospiti</strong> servono <strong>{{ $roomsNeeded }} camere</strong>.@if ($secondRoomDiscount > 0) E buona notizia: la <strong>seconda camera ha uno sconto del {{ $secondRoomDiscount }}%</strong>!@endif</span>
+                    </div>
+                @endif
+
                 <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach ($roomsGrid as $entry)
                         @php($room = $entry['room'])

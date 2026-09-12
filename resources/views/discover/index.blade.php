@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Scopri Cassino · '.$bnb['name'])
-@section('meta_description', 'Cosa vedere a Cassino: Abbazia di Montecassino, luoghi della memoria della Seconda Guerra Mondiale, parco archeologico romano e negozi/attività convenzionate per gli ospiti del B&B.')
+@section('title', 'Turismo a Cassino · '.$bnb['name'])
+@section('meta_description', 'Cosa vedere a Cassino: Abbazia di Montecassino, luoghi della memoria della Seconda Guerra Mondiale, parco archeologico romano e altro ancora.')
 
 @section('content')
     <section class="bg-sage-50 py-14">
         <div class="container-bnb text-center" data-reveal>
-            <span class="eyebrow">Scopri Cassino</span>
-            <h1 class="section-title text-balance">Storia, arte e natura</h1>
+            <span class="eyebrow">Turismo</span>
+            <h1 class="section-title text-balance">Cosa vedere a Cassino</h1>
             <p class="mx-auto mt-4 max-w-2xl text-ink-light">{{ $settings['discover.intro'] ?? '' }}</p>
+            <a href="{{ route('discover.activities') }}" class="btn-outline mt-6">Vedi anche negozi e attività convenzionate →</a>
         </div>
     </section>
 
@@ -48,39 +49,4 @@
             @endforelse
         </div>
     </section>
-
-    {{-- Negozi e attività locali (con convenzioni per gli ospiti) --}}
-    @if ($conventions->isNotEmpty())
-        <section class="bg-cream-50 py-16">
-            <div class="container-bnb">
-                <div class="mx-auto max-w-2xl text-center" data-reveal>
-                    <span class="eyebrow">Vantaggi per i nostri ospiti</span>
-                    <h2 class="section-title">Negozi e attività locali</h2>
-                    <p class="mt-4 text-ink-light">Ristoranti, bar e negozi amici del B&amp;B: mostrando la conferma di prenotazione hai sconti e piccoli extra riservati a te.</p>
-                </div>
-                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    @foreach ($conventions as $place)
-                        @php($icon = match($place->type) { 'ristorante' => 'utensils', 'bar' => 'coffee', 'negozio' => 'shop', default => 'gift' })
-                        <a href="{{ route('discover.show', $place) }}" class="flex flex-col rounded-2xl border border-clay-200 bg-white p-6 card-lift" data-reveal>
-                            <div class="flex items-center justify-between">
-                                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-clay-50 text-clay-600">
-                                    <x-icon :name="$icon" class="h-6 w-6"/>
-                                </div>
-                                @if ($place->type)<span class="badge-clay">{{ $place->typeLabel() }}</span>@endif
-                            </div>
-                            <h3 class="mt-4 font-serif text-lg text-ink">{{ $place->name }}</h3>
-                            <p class="mt-1 flex-1 text-sm text-ink-light">{{ $place->description }}</p>
-                            @if ($place->convention_description)
-                                <p class="mt-3 flex items-start gap-2 rounded-lg bg-clay-50 p-3 text-sm font-medium text-clay-700">
-                                    <x-icon name="gift" class="mt-0.5 h-4 w-4 shrink-0"/>
-                                    <span>{{ $place->convention_description }}</span>
-                                </p>
-                            @endif
-                            @if ($place->distance_walking)<p class="mt-3 inline-flex items-center gap-1.5 text-xs text-ink-soft"><x-icon name="pin" class="h-4 w-4"/> {{ $place->distance_walking }}</p>@endif
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
 @endsection

@@ -1,17 +1,23 @@
 @php($nav = [
     ['label' => 'Home', 'route' => 'home'],
     ['label' => 'Camere', 'route' => 'rooms.index'],
-    ['label' => 'Scopri Cassino', 'route' => 'discover.index'],
+    ['label' => 'Turismo', 'route' => 'discover.index'],
+    ['label' => 'Attività', 'route' => 'discover.activities'],
     ['label' => 'Contatti', 'route' => 'contact'],
 ])
 <header class="sticky top-0 z-40 border-b border-cream-300 bg-cream-100/95 backdrop-blur">
     <nav class="container-bnb flex items-center justify-between py-4">
         <a href="{{ route('home') }}" class="flex items-center gap-3">
-            <img src="{{ ! empty($settings['branding.logo']) ? asset($settings['branding.logo']) : '/icons/icon.svg' }}" alt="B&amp;B Cassino Centrale" class="h-10 w-10 object-contain">
-            <span class="leading-tight">
-                <span class="block font-serif text-lg font-semibold text-clay-700">B&amp;B Cassino Centrale</span>
-                <span class="block text-xs text-ink-soft">{{ $bnb['tagline'] }}</span>
-            </span>
+            @if (! empty($settings['branding.logo']))
+                {{-- Con logo caricato: mostriamo solo il logo (più grande) --}}
+                <img src="{{ asset($settings['branding.logo']) }}" alt="B&amp;B Cassino Centrale" class="h-12 w-auto max-w-[220px] object-contain">
+            @else
+                <img src="/icons/icon.svg" alt="" class="h-10 w-10 object-contain" aria-hidden="true">
+                <span class="leading-tight">
+                    <span class="block font-serif text-lg font-semibold text-clay-700">B&amp;B Cassino Centrale</span>
+                    <span class="block text-xs text-ink-soft">{{ $bnb['tagline'] }}</span>
+                </span>
+            @endif
         </a>
 
         <div class="hidden items-center gap-8 md:flex">

@@ -51,6 +51,25 @@ class SettingsController extends Controller
         return redirect()->route('admin.settings.index')->with('success', 'Logo aggiornato.');
     }
 
+    /** Carica/aggiorna la favicon (icona nella scheda del browser). */
+    public function favicon(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'favicon' => ['required', 'image', 'mimes:png,ico,svg,jpg,jpeg,webp', 'max:1024'],
+        ], [
+            'favicon.required' => 'Scegli un file per la favicon.',
+        ]);
+
+        $path = $request->file('favicon')->store('branding', 'public');
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'branding.favicon'],
+            ['value' => 'storage/'.$path, 'type' => 'string', 'group' => 'branding'],
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'Favicon aggiornata.');
+    }
+
     /** Salva lo sconto per la seconda camera (prenotazioni di gruppo). */
     public function pricing(Request $request): RedirectResponse
     {

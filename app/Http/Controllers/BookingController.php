@@ -71,10 +71,15 @@ class BookingController extends Controller
 
         $blockedDates = $this->availability->fullyUnavailableDates();
 
+        $secondRoomDiscount = (int) \App\Support\Settings::get(
+            'pricing.second_room_discount_percent',
+            config('bnb.pricing.second_room_discount_percent', 15)
+        );
+
         return view('bookings.create', compact(
             'checkIn', 'checkOut', 'guests', 'nights', 'roomsNeeded',
             'roomsGrid', 'selectedSlugs', 'selectedRooms', 'quote',
-            'blockedDates', 'error',
+            'blockedDates', 'error', 'secondRoomDiscount',
         ));
     }
 

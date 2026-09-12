@@ -39,6 +39,26 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach((el) => observer.observe(el));
     }
 
+    // Effetto parallax leggero sulle immagini con [data-parallax].
+    const parallaxEls = document.querySelectorAll('[data-parallax]');
+    if (parallaxEls.length && !reduceMotion) {
+        let ticking = false;
+        const updateParallax = () => {
+            const y = window.scrollY;
+            parallaxEls.forEach((el) => {
+                el.style.transform = `translate3d(0, ${(y * 0.18).toFixed(1)}px, 0)`;
+            });
+            ticking = false;
+        };
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        }, { passive: true });
+        updateParallax();
+    }
+
     // Calendario di prenotazione (scelta arrivo/partenza) con giorni pieni disattivati.
     const rangeEl = document.querySelector('[data-date-range]');
     if (rangeEl) {

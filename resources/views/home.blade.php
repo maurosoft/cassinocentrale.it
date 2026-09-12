@@ -3,26 +3,26 @@
 @section('content')
     {{-- ===================== HERO ===================== --}}
     <section class="relative isolate overflow-hidden">
-        <img src="{{ asset('images/rooms/hero.jpg') }}" alt=""
-             class="absolute inset-0 -z-10 h-full w-full object-cover" aria-hidden="true">
-        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/45 to-ink/65"></div>
+        <img src="{{ asset('images/rooms/hero.jpg') }}" alt="" data-parallax
+             class="absolute left-0 top-[-25%] -z-10 h-[150%] w-full object-cover" aria-hidden="true">
+        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/45 to-ink/70"></div>
 
         <div class="container-bnb flex min-h-[74vh] flex-col items-center justify-center py-24 text-center text-cream-50">
-            <span class="eyebrow animate-fade-up text-cream-100">{{ $bnb['tagline'] }}</span>
-            <h1 class="mt-4 max-w-3xl animate-fade-up animate-delay-1 font-serif text-4xl font-semibold leading-tight text-balance sm:text-5xl md:text-6xl">
+            <span class="eyebrow animate-fade-up text-shadow-soft text-cream-100">{{ $bnb['tagline'] }}</span>
+            <h1 class="mt-4 max-w-3xl animate-fade-up animate-delay-1 text-shadow-soft font-serif text-4xl font-semibold leading-tight text-balance sm:text-5xl md:text-6xl">
                 {{ $settings['home.hero_title'] ?? $bnb['slogan'] }}
             </h1>
-            <p class="mt-5 max-w-xl animate-fade-up animate-delay-2 text-lg text-cream-100/90">
+            <p class="mt-5 max-w-xl animate-fade-up animate-delay-2 text-shadow-soft text-lg text-cream-100/95">
                 {{ $settings['home.hero_subtitle'] ?? '' }}
             </p>
             <div class="mt-9 flex animate-fade-up animate-delay-3 flex-wrap items-center justify-center gap-3">
-                <a href="{{ route('booking.create') }}" class="btn-primary">Prenota ora</a>
-                <a href="{{ route('rooms.index') }}" class="btn-outline border-cream-100 text-cream-50 hover:bg-white/10">
+                <a href="{{ route('booking.create') }}" class="btn-primary shadow-xl shadow-clay-900/30">Prenota ora</a>
+                <a href="{{ route('rooms.index') }}" class="btn-outline border-cream-100 text-cream-50 shadow-lg shadow-ink/20 hover:bg-white/10">
                     Vedi le camere
                 </a>
             </div>
 
-            <div class="mt-10 flex animate-fade-up animate-delay-3 flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-cream-100/90">
+            <div class="mt-10 flex animate-fade-up animate-delay-3 flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-shadow-soft text-cream-50">
                 <span class="inline-flex items-center gap-1.5"><x-icon name="star" class="h-4 w-4"/> 65 € a notte</span>
                 <span class="inline-flex items-center gap-1.5"><x-icon name="coffee" class="h-4 w-4"/> Colazione inclusa</span>
                 <span class="inline-flex items-center gap-1.5"><x-icon name="pin" class="h-4 w-4"/> In pieno centro</span>

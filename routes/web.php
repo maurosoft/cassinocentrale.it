@@ -21,6 +21,7 @@ Route::get('/camere', [RoomController::class, 'index'])->name('rooms.index');
 Route::get('/camere/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::get('/scopri-cassino', [DiscoverController::class, 'index'])->name('discover.index');
+Route::get('/attivita', [DiscoverController::class, 'activities'])->name('discover.activities');
 Route::get('/scopri-cassino/{place}', [DiscoverController::class, 'show'])->name('discover.show');
 
 Route::get('/contatti', [ContactController::class, 'index'])->name('contact');
@@ -68,6 +69,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
             Route::post('settings/branding', [Admin\SettingsController::class, 'branding'])->name('settings.branding');
+            Route::post('settings/favicon', [Admin\SettingsController::class, 'favicon'])->name('settings.favicon');
             Route::post('settings/pricing', [Admin\SettingsController::class, 'pricing'])->name('settings.pricing');
         });
 

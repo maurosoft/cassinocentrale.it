@@ -66,6 +66,23 @@
                 <button type="submit" class="btn-primary !py-2">Carica logo</button>
             </form>
         </div>
+
+        {{-- Favicon --}}
+        @php($favicon = \App\Support\Settings::get('branding.favicon'))
+        <div class="mt-6 border-t border-cream-200 pt-5">
+            <h3 class="font-serif text-base text-ink">Favicon</h3>
+            <p class="mt-1 text-sm text-ink-light">La piccola icona che appare nella scheda del browser (meglio quadrata, PNG/SVG/ICO).</p>
+            <div class="mt-3 flex flex-wrap items-center gap-5">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cream-300 bg-cream-50">
+                    <img src="{{ $favicon ? asset($favicon) : '/icons/icon.svg' }}" alt="Favicon" class="max-h-8 max-w-8 object-contain">
+                </div>
+                <form method="POST" action="{{ route('admin.settings.favicon') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
+                    @csrf
+                    <input type="file" name="favicon" accept="image/png,image/svg+xml,image/x-icon,image/jpeg,image/webp" required class="text-sm text-ink-light file:mr-3 file:rounded-lg file:border-0 file:bg-clay-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-clay-700">
+                    <button type="submit" class="btn-primary !py-2">Carica favicon</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     {{-- Sconto seconda camera (gruppi) --}}

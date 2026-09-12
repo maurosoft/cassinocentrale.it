@@ -24,7 +24,8 @@
             <h3 class="mb-3 font-serif text-lg text-cream-50">Esplora</h3>
             <ul class="space-y-1.5">
                 <li><a href="{{ route('rooms.index') }}" class="text-cream-200/90 hover:text-white">Le camere</a></li>
-                <li><a href="{{ route('discover.index') }}" class="text-cream-200/90 hover:text-white">Scopri Cassino</a></li>
+                <li><a href="{{ route('discover.index') }}" class="text-cream-200/90 hover:text-white">Turismo</a></li>
+                <li><a href="{{ route('discover.activities') }}" class="text-cream-200/90 hover:text-white">Attività</a></li>
                 <li><a href="{{ route('contact') }}" class="text-cream-200/90 hover:text-white">Dove siamo</a></li>
                 <li><a href="{{ route('booking.create') }}" class="text-cream-200/90 hover:text-white">Prenota</a></li>
             </ul>

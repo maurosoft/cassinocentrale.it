@@ -7,16 +7,21 @@ use Illuminate\Contracts\View\View;
 
 class DiscoverController extends Controller
 {
+    /** Turismo: luoghi da visitare, raggruppati per categoria. */
     public function index(): View
     {
-        // Luoghi turistici, raggruppati per categoria.
         $attractions = Place::active()->attractions()->ordered()->get()
             ->groupBy('category');
 
-        // Attività convenzionate (sconti/promo per gli ospiti).
+        return view('discover.index', compact('attractions'));
+    }
+
+    /** Attività: negozi, ristoranti, servizi (con convenzioni). */
+    public function activities(): View
+    {
         $conventions = Place::active()->conventions()->ordered()->get();
 
-        return view('discover.index', compact('attractions', 'conventions'));
+        return view('discover.activities', compact('conventions'));
     }
 
     /** Scheda di dettaglio di un luogo/attività. */

@@ -93,4 +93,11 @@
         opacity: 1 !important;
         transform: none !important;
     }
+    [data-parallax] { transform: none !important; }
 }
+
+/* Ombra morbida per il testo sopra le foto (leggibilità) */
+.text-shadow-soft { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45); }
+
+/* Immagine con effetto parallax (mossa dal JS allo scroll) */
+[data-parallax] { will-change: transform; }

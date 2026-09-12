@@ -12,8 +12,9 @@
     {{-- PWA --}}
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#b85c38">
-    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icons/icon.svg">
+    @php($favicon = $settings['branding.favicon'] ?? null)
+    <link rel="icon" href="{{ $favicon ? asset($favicon) : '/icons/icon.svg' }}">
+    <link rel="apple-touch-icon" href="{{ $favicon ? asset($favicon) : '/icons/icon.svg' }}">
 
     {{-- Open Graph (condivisione social) --}}
     <meta property="og:title" content="@yield('title', $settings['seo.title'] ?? $bnb['name'])">
