@@ -22,19 +22,24 @@
                     </h2>
                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         @foreach ($places as $place)
-                            <article class="card card-lift flex flex-col p-6" data-reveal>
-                                <h3 class="font-serif text-xl text-ink">{{ $place->name }}</h3>
-                                <p class="mt-2 flex-1 text-sm text-ink-light">{{ $place->description }}</p>
-                                <div class="mt-4 space-y-1.5 text-xs text-ink-soft">
-                                    @if ($place->distance_walking)<p class="inline-flex items-center gap-1.5"><x-icon name="pin" class="h-4 w-4"/> {{ $place->distance_walking }}</p>@endif
-                                    @if ($place->distance_bus)<p class="flex items-center gap-1.5"><x-icon name="train" class="h-4 w-4"/> {{ $place->distance_bus }}</p>@endif
-                                    @if ($place->distance_car)<p class="flex items-center gap-1.5"><x-icon name="key" class="h-4 w-4"/> {{ $place->distance_car }}</p>@endif
+                            <a href="{{ route('discover.show', $place) }}" class="card card-lift flex flex-col overflow-hidden" data-reveal>
+                                <div class="aspect-[16/10] overflow-hidden bg-sage-100">
+                                    @if ($place->image)
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($place->image, ['http','/']) ? $place->image : asset($place->image) }}" alt="{{ $place->name }}" class="h-full w-full object-cover transition duration-500 hover:scale-105" loading="lazy">
+                                    @else
+                                        <div class="flex h-full items-center justify-center text-sage-400"><x-icon name="pin" class="h-10 w-10"/></div>
+                                    @endif
                                 </div>
-                                @if ($place->link)
-                                    <a href="{{ $place->link }}" target="_blank" rel="noopener"
-                                       class="mt-4 text-sm font-medium text-clay-600 hover:text-clay-700">Sito ufficiale →</a>
-                                @endif
-                            </article>
+                                <div class="flex flex-1 flex-col p-5">
+                                    <h3 class="font-serif text-xl text-ink">{{ $place->name }}</h3>
+                                    <p class="mt-2 flex-1 text-sm text-ink-light">{{ \Illuminate\Support\Str::limit($place->description, 100) }}</p>
+                                    <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-soft">
+                                        @if ($place->distance_walking)<span class="inline-flex items-center gap-1"><x-icon name="pin" class="h-3.5 w-3.5"/> {{ $place->distance_walking }}</span>@endif
+                                        @if ($place->distance_bus)<span class="inline-flex items-center gap-1"><x-icon name="train" class="h-3.5 w-3.5"/> {{ $place->distance_bus }}</span>@endif
+                                    </div>
+                                    <span class="mt-4 text-sm font-medium text-clay-600">Scopri di più →</span>
+                                </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
@@ -56,7 +61,7 @@
                 <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($conventions as $place)
                         @php($icon = match($place->type) { 'ristorante' => 'utensils', 'bar' => 'coffee', 'negozio' => 'shop', default => 'gift' })
-                        <article class="flex flex-col rounded-2xl border border-clay-200 bg-white p-6 card-lift" data-reveal>
+                        <a href="{{ route('discover.show', $place) }}" class="flex flex-col rounded-2xl border border-clay-200 bg-white p-6 card-lift" data-reveal>
                             <div class="flex items-center justify-between">
                                 <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-clay-50 text-clay-600">
                                     <x-icon :name="$icon" class="h-6 w-6"/>
@@ -72,7 +77,7 @@
                                 </p>
                             @endif
                             @if ($place->distance_walking)<p class="mt-3 inline-flex items-center gap-1.5 text-xs text-ink-soft"><x-icon name="pin" class="h-4 w-4"/> {{ $place->distance_walking }}</p>@endif
-                        </article>
+                        </a>
                     @endforeach
                 </div>
             </div>

@@ -17,6 +17,7 @@
             <dl class="mt-4 space-y-2 text-sm">
                 <div class="flex justify-between"><dt class="text-ink-soft">Email</dt><dd class="text-ink">{{ $customer->email ?: '—' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-ink-soft">Telefono</dt><dd class="text-ink">{{ $customer->phone ?: '—' }}</dd></div>
+                <div class="flex justify-between"><dt class="text-ink-soft">Nascita</dt><dd class="text-ink">{{ $customer->birth_date?->format('d/m/Y') ?: '—' }}@if ($customer->birth_place), {{ $customer->birth_place }}@endif</dd></div>
                 <div class="flex justify-between"><dt class="text-ink-soft">Prenotazioni</dt><dd class="text-ink">{{ $customer->bookings->count() }}</dd></div>
             </dl>
             <a href="{{ route('admin.bookings.create') }}" class="btn-primary mt-5 w-full"><x-icon name="plus" class="h-4 w-4"/> Nuova prenotazione</a>

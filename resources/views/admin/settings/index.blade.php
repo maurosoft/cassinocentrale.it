@@ -51,6 +51,67 @@
         </div>
     @endif
 
+    {{-- Logo del sito --}}
+    @php($logo = \App\Support\Settings::get('branding.logo'))
+    <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">
+        <h2 class="font-serif text-lg text-ink">Logo del sito</h2>
+        <p class="mt-1 text-sm text-ink-light">Carica il logo del B&amp;B (PNG, JPG, WEBP o SVG). Comparirà nella testata del sito.</p>
+        <div class="mt-4 flex flex-wrap items-center gap-5">
+            <div class="flex h-16 w-16 items-center justify-center rounded-xl border border-cream-300 bg-cream-50">
+                <img src="{{ $logo ? asset($logo) : '/icons/icon.svg' }}" alt="Logo" class="max-h-14 max-w-14 object-contain">
+            </div>
+            <form method="POST" action="{{ route('admin.settings.branding') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
+                @csrf
+                <input type="file" name="logo" accept="image/*" required class="text-sm text-ink-light file:mr-3 file:rounded-lg file:border-0 file:bg-clay-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-clay-700">
+                <button type="submit" class="btn-primary !py-2">Carica logo</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- Notifiche (solo superadmin) --}}
+    @if (auth()->user()->isSuperadmin())
+        <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">
+            <h2 class="font-serif text-lg text-ink">Notifiche automatiche</h2>
+            <p class="mt-1 text-sm text-ink-light">Scegli <strong>se</strong> e <strong>quando</strong> inviare le comunicazioni al cliente. L'invio vero e proprio (email/WhatsApp) si attiva con la Fase 4; qui imposti le preferenze.</p>
+            <form method="POST" action="{{ route('admin.settings.notifications') }}" class="mt-4 space-y-4">
+                @csrf
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs uppercase text-ink-soft"><tr><th class="py-2">Evento</th><th class="py-2 text-center">Email</th><th class="py-2 text-center">WhatsApp</th></tr></thead>
+                        <tbody class="divide-y divide-cream-200">
+                            @php($n = fn ($k) => (bool) \App\Support\Settings::get('notify.'.$k, false))
+                            <tr>
+                                <td class="py-2">Nuova prenotazione</td>
+                                <td class="py-2 text-center"><input type="checkbox" name="email_new" value="1" @checked($n('email_new')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                                <td class="py-2 text-center"><input type="checkbox" name="whatsapp_new" value="1" @checked($n('whatsapp_new')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">Modifica prenotazione</td>
+                                <td class="py-2 text-center"><input type="checkbox" name="email_change" value="1" @checked($n('email_change')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                                <td class="py-2 text-center"><input type="checkbox" name="whatsapp_change" value="1" @checked($n('whatsapp_change')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">Annullamento prenotazione</td>
+                                <td class="py-2 text-center"><input type="checkbox" name="email_cancel" value="1" @checked($n('email_cancel')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                                <td class="py-2 text-center"><input type="checkbox" name="whatsapp_cancel" value="1" @checked($n('whatsapp_cancel')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 rounded-lg bg-cream-50 p-3">
+                    <label class="flex items-center gap-2 text-sm text-ink">
+                        <input type="checkbox" name="reminder_enabled" value="1" @checked($n('reminder_enabled')) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500">
+                        Promemoria prima dell'arrivo
+                    </label>
+                    <span class="text-sm text-ink-light">quando mancano</span>
+                    <input type="number" name="reminder_days" min="0" max="30" value="{{ \App\Support\Settings::get('notify.reminder_days', 1) }}" class="w-20 rounded-lg border-cream-300 text-sm focus:border-clay-500 focus:ring-clay-500">
+                    <span class="text-sm text-ink-light">giorni.</span>
+                </div>
+                <button type="submit" class="btn-primary !py-2.5">Salva notifiche</button>
+            </form>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('admin.settings.update') }}">
         @csrf @method('PUT')
 

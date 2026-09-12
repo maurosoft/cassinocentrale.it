@@ -35,6 +35,14 @@
                     <label class="block text-sm font-medium text-ink">Telefono</label>
                     <input name="phone" value="{{ old('phone', $booking->guest_phone) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Data di nascita</label>
+                    <input type="date" name="birth_date" value="{{ old('birth_date', optional($booking->customer?->birth_date)->format('Y-m-d')) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Luogo di nascita</label>
+                    <input name="birth_place" value="{{ old('birth_place', $booking->customer?->birth_place) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
             </div>
         </div>
 

@@ -16,8 +16,17 @@ class Customer extends Model
         'last_name',
         'email',
         'phone',
+        'birth_date',
+        'birth_place',
         'notes',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'birth_date' => 'date',
+        ];
+    }
 
     public function bookings(): HasMany
     {
@@ -46,6 +55,8 @@ class Customer extends Model
             'last_name' => $data['last_name'] ?? $customer->last_name,
             'email' => $email ?: $customer->email,
             'phone' => $data['phone'] ?? $customer->phone,
+            'birth_date' => $data['birth_date'] ?? $customer->birth_date,
+            'birth_place' => $data['birth_place'] ?? $customer->birth_place,
         ]);
         $customer->save();
 

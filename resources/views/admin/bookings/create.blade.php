@@ -47,8 +47,16 @@
                     <label class="block text-sm font-medium text-ink">Telefono</label>
                     <input name="phone" id="cust-phone" value="{{ old('phone') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Data di nascita</label>
+                    <input type="date" name="birth_date" id="cust-birthdate" value="{{ old('birth_date') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Luogo di nascita</label>
+                    <input name="birth_place" id="cust-birthplace" value="{{ old('birth_place') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                </div>
             </div>
-            <p class="mt-2 text-xs text-ink-soft">Email e telefono servono per inviare le conferme (le notifiche automatiche arriveranno con la Fase 4).</p>
+            <p class="mt-2 text-xs text-ink-soft">Email e telefono servono per le conferme. Data e luogo di nascita sono utili per il CRM/marketing (facoltativi).</p>
         </div>
 
         {{-- Soggiorno --}}
@@ -57,17 +65,17 @@
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-ink">Arrivo *</label>
-                    <input type="date" name="check_in" value="{{ old('check_in') }}" required class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                    <input type="date" name="check_in" value="{{ old('check_in', $prefill['check_in'] ?? '') }}" required class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-ink">Partenza *</label>
-                    <input type="date" name="check_out" value="{{ old('check_out') }}" required class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                    <input type="date" name="check_out" value="{{ old('check_out', $prefill['check_out'] ?? '') }}" required class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-ink">Camera *</label>
                     <select name="room_id" required class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
                         @foreach ($rooms as $room)
-                            <option value="{{ $room->id }}" @selected(old('room_id') == $room->id)>Camera {{ $room->number_name }}@if ($room->name) · {{ $room->name }}@endif</option>
+                            <option value="{{ $room->id }}" @selected(old('room_id', $prefill['room_id'] ?? '') == $room->id)>Camera {{ $room->number_name }}@if ($room->name) · {{ $room->name }}@endif</option>
                         @endforeach
                     </select>
                 </div>
@@ -109,17 +117,15 @@
             const results = document.getElementById('customer-results');
             if (!search || !results) return;
 
-            const customers = @json($customers->map(fn ($c) => [
-                'first' => $c->first_name, 'last' => $c->last_name,
-                'email' => $c->email, 'phone' => $c->phone,
-                'label' => trim($c->fullName().' '.($c->email ?: '').' '.($c->phone ?: '')),
-            ])->values());
+            const customers = @json($customersData);
 
             const fill = (c) => {
                 document.getElementById('cust-first').value = c.first || '';
                 document.getElementById('cust-last').value = c.last || '';
                 document.getElementById('cust-email').value = c.email || '';
                 document.getElementById('cust-phone').value = c.phone || '';
+                const bd = document.getElementById('cust-birthdate'); if (bd) bd.value = c.birthdate || '';
+                const bp = document.getElementById('cust-birthplace'); if (bp) bp.value = c.birthplace || '';
             };
 
             const render = (list) => {

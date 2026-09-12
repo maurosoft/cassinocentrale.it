@@ -7,7 +7,7 @@
 <header class="sticky top-0 z-40 border-b border-cream-300 bg-cream-100/95 backdrop-blur">
     <nav class="container-bnb flex items-center justify-between py-4">
         <a href="{{ route('home') }}" class="flex items-center gap-3">
-            <img src="/icons/icon.svg" alt="" class="h-10 w-10" aria-hidden="true">
+            <img src="{{ ! empty($settings['branding.logo']) ? asset($settings['branding.logo']) : '/icons/icon.svg' }}" alt="B&amp;B Cassino Centrale" class="h-10 w-10 object-contain">
             <span class="leading-tight">
                 <span class="block font-serif text-lg font-semibold text-clay-700">B&amp;B Cassino Centrale</span>
                 <span class="block text-xs text-ink-soft">{{ $bnb['tagline'] }}</span>

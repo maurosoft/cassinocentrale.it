@@ -5,7 +5,13 @@
 @section('content')
     <div class="mb-4 flex items-center justify-between">
         <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center gap-1.5 text-sm text-ink-light hover:text-clay-600"><x-icon name="arrow-left" class="h-4 w-4"/> Torna alle prenotazioni</a>
-        <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn-primary !py-2"><x-icon name="edit" class="h-4 w-4"/> Modifica prenotazione</a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn-primary !py-2"><x-icon name="edit" class="h-4 w-4"/> Modifica</a>
+            <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="return confirm('Eliminare definitivamente questa prenotazione?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn-outline !py-2 border-red-300 text-red-600 hover:bg-red-50"><x-icon name="trash" class="h-4 w-4"/> Elimina</button>
+            </form>
+        </div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">

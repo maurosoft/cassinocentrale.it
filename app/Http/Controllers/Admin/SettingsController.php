@@ -19,14 +19,62 @@ class SettingsController extends Controller
         'generale' => 'Interruttori sezioni',
     ];
 
+    /** Gruppi gestiti con schede dedicate (non nel form generico). */
+    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche'];
+
     public function index(): View
     {
         $groups = SiteSetting::orderBy('group')->orderBy('key')->get()
-            ->reject(fn (SiteSetting $s) => $s->group === 'manutenzione') // gestita a parte con la scheda dedicata
+            ->reject(fn (SiteSetting $s) => in_array($s->group, self::SPECIAL_GROUPS, true))
             ->groupBy('group');
         $labels = self::GROUP_LABELS;
 
         return view('admin.settings.index', compact('groups', 'labels'));
+    }
+
+    /** Carica/aggiorna il logo del sito. */
+    public function branding(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+        ], [
+            'logo.required' => 'Scegli un file immagine per il logo.',
+        ]);
+
+        $path = $request->file('logo')->store('branding', 'public');
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'branding.logo'],
+            ['value' => 'storage/'.$path, 'type' => 'string', 'group' => 'branding'],
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'Logo aggiornato.');
+    }
+
+    /** Salva gli interruttori delle notifiche (attive/da inviare). */
+    public function notifications(Request $request): RedirectResponse
+    {
+        $toggles = [
+            'notify.email_new', 'notify.whatsapp_new',
+            'notify.email_change', 'notify.whatsapp_change',
+            'notify.email_cancel', 'notify.whatsapp_cancel',
+            'notify.reminder_enabled',
+        ];
+
+        foreach ($toggles as $key) {
+            $field = str_replace('notify.', '', $key);
+            SiteSetting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $request->boolean($field) ? '1' : '0', 'type' => 'boolean', 'group' => 'notifiche'],
+            );
+        }
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'notify.reminder_days'],
+            ['value' => (string) max(0, (int) $request->input('reminder_days', 1)), 'type' => 'integer', 'group' => 'notifiche'],
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'Impostazioni notifiche salvate.');
     }
 
     /** Accende/spegne la modalità manutenzione (solo superadmin). */

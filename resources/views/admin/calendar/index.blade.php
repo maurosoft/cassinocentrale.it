@@ -54,7 +54,9 @@
                                         </div>
                                     @endif
                                 @else
-                                    <div class="h-8 rounded bg-cream-50"></div>
+                                    <a href="{{ route('admin.bookings.create', ['room_id' => $room->id, 'check_in' => $day->format('Y-m-d')]) }}" class="flex h-8 items-center justify-center rounded bg-cream-50 text-transparent transition hover:bg-clay-100 hover:text-clay-500" title="Aggiungi prenotazione il {{ $day->format('d/m') }}">
+                                        <x-icon name="plus" class="h-3.5 w-3.5"/>
+                                    </a>
                                 @endif
                             </td>
                         @endforeach

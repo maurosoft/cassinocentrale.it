@@ -45,12 +45,30 @@ class BookingController extends Controller
     }
 
     /** Form di inserimento manuale prenotazione (admin/reception). */
-    public function create(): View
+    public function create(Request $request): View
     {
         $rooms = Room::active()->ordered()->get();
         $customers = Customer::orderBy('first_name')->orderBy('last_name')->get();
 
-        return view('admin.bookings.create', compact('rooms', 'customers'));
+        // Dati clienti per l'autocomplete (calcolati qui, non nella vista)
+        $customersData = $customers->map(fn (Customer $c) => [
+            'first' => $c->first_name,
+            'last' => $c->last_name,
+            'email' => $c->email,
+            'phone' => $c->phone,
+            'birthdate' => optional($c->birth_date)->format('Y-m-d'),
+            'birthplace' => $c->birth_place,
+            'label' => trim($c->fullName().' '.($c->email ?: '').' '.($c->phone ?: '')),
+        ])->values();
+
+        // Precompilazione (es. clic su un giorno libero del calendario)
+        $prefill = [
+            'check_in' => $request->query('check_in'),
+            'check_out' => $request->query('check_in') ? \Illuminate\Support\Carbon::parse($request->query('check_in'))->addDay()->format('Y-m-d') : null,
+            'room_id' => $request->query('room_id'),
+        ];
+
+        return view('admin.bookings.create', compact('rooms', 'customers', 'customersData', 'prefill'));
     }
 
     /** Salva una prenotazione inserita manualmente. */
@@ -65,6 +83,8 @@ class BookingController extends Controller
             'last_name' => ['nullable', 'string', 'max:80'],
             'email' => ['nullable', 'email', 'max:150'],
             'phone' => ['nullable', 'string', 'max:40'],
+            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['nullable', 'string', 'max:120'],
             'status' => ['required', 'in:'.implode(',', array_keys(Booking::STATUSES))],
             'notes' => ['nullable', 'string', 'max:1000'],
             'force' => ['nullable', 'boolean'],
@@ -126,6 +146,15 @@ class BookingController extends Controller
         return view('admin.bookings.show', compact('booking'));
     }
 
+    /** Elimina definitivamente la prenotazione. */
+    public function destroy(Booking $booking): RedirectResponse
+    {
+        // NB: l'eventuale notifica di annullamento al cliente arriverà nella Fase 4.
+        $booking->delete(); // le camere collegate (booking_rooms) sono rimosse a cascata
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Prenotazione eliminata.');
+    }
+
     /** Aggiornamento rapido di stato/pagamento/note dalla scheda prenotazione. */
     public function statusUpdate(Request $request, Booking $booking): RedirectResponse
     {
@@ -161,6 +190,8 @@ class BookingController extends Controller
             'last_name' => ['nullable', 'string', 'max:80'],
             'email' => ['nullable', 'email', 'max:150'],
             'phone' => ['nullable', 'string', 'max:40'],
+            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['nullable', 'string', 'max:120'],
             'status' => ['required', 'in:'.implode(',', array_keys(Booking::STATUSES))],
             'payment_status' => ['required', 'in:unpaid,paid,refunded'],
             'notes' => ['nullable', 'string', 'max:1000'],

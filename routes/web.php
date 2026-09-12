@@ -21,6 +21,7 @@ Route::get('/camere', [RoomController::class, 'index'])->name('rooms.index');
 Route::get('/camere/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::get('/scopri-cassino', [DiscoverController::class, 'index'])->name('discover.index');
+Route::get('/scopri-cassino/{place}', [DiscoverController::class, 'show'])->name('discover.show');
 
 Route::get('/contatti', [ContactController::class, 'index'])->name('contact');
 
@@ -66,6 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('reviews', Admin\ReviewController::class)->except('show');
             Route::get('settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+            Route::post('settings/branding', [Admin\SettingsController::class, 'branding'])->name('settings.branding');
         });
 
         // Prenotazioni, calendario e chiusure (superadmin, reception)
@@ -77,6 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('bookings/{booking}/edit', [Admin\BookingController::class, 'edit'])->name('bookings.edit');
             Route::put('bookings/{booking}', [Admin\BookingController::class, 'update'])->name('bookings.update');
             Route::patch('bookings/{booking}/status', [Admin\BookingController::class, 'statusUpdate'])->name('bookings.status');
+            Route::delete('bookings/{booking}', [Admin\BookingController::class, 'destroy'])->name('bookings.destroy');
 
             Route::get('customers', [Admin\CustomerController::class, 'index'])->name('customers.index');
             Route::get('customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
@@ -92,6 +95,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('role:superadmin')->group(function () {
             Route::resource('users', Admin\UserController::class)->except('show');
             Route::post('settings/maintenance', [Admin\SettingsController::class, 'maintenance'])->name('settings.maintenance');
+            Route::post('settings/notifications', [Admin\SettingsController::class, 'notifications'])->name('settings.notifications');
         });
     });
 });
