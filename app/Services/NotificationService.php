@@ -74,6 +74,22 @@ class NotificationService
         }
     }
 
+    /** Invia un'email di prova per verificare la configurazione SMTP. */
+    public function sendTest(string $to): bool
+    {
+        try {
+            Mail::raw('Email di test dal sito B&B Cassino Centrale. Se leggi questo messaggio, la configurazione SMTP funziona correttamente!',
+                fn ($m) => $m->to($to)->subject('Test email · B&B Cassino Centrale'));
+            EmailLog::create(['to' => $to, 'subject' => 'Test email', 'event' => 'test', 'status' => 'sent']);
+
+            return true;
+        } catch (\Throwable $e) {
+            EmailLog::create(['to' => $to, 'subject' => 'Test email', 'event' => 'test', 'status' => 'failed', 'error' => mb_substr($e->getMessage(), 0, 1000)]);
+
+            return false;
+        }
+    }
+
     /** Testo del messaggio WhatsApp. */
     private function whatsappText(Booking $booking, string $audience, string $event): string
     {
