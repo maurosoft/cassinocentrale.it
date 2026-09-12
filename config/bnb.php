@@ -15,8 +15,16 @@ return [
     'tagline' => 'Nel Cuore della Città',
     'slogan' => 'Soggiorna a Cassino Centrale e hai Tutto a Portata di Mano!',
 
+    // Dati legali/fiscali (usati nelle pagine Privacy e Termini).
+    'legal' => [
+        'business_name' => 'Bed & Breakfast Cassino Centrale',
+        'owner' => 'Jessica Vicalvi',
+        'vat' => '03351130608',
+        'registered_office' => 'Via Madonna delle Grazie 1, int. 1 – 03030 Villa Santa Lucia (FR)',
+    ],
+
     'contact' => [
-        'address' => 'Viale Dante, 6 – Cassino (FR)',
+        'address' => 'Viale Dante, 6 – 03043 Cassino (FR)',
         'phone' => '0776 1400205',
         'phone_raw' => '+390776140020',
         'email' => env('MAIL_FROM_ADDRESS', 'info@cassinocentrale.it'),

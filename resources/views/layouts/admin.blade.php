@@ -18,6 +18,8 @@
     $menu = [
         ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'home', 'roles' => ['superadmin','reception','editor']],
         ['label' => 'Prenotazioni', 'route' => 'admin.bookings.index', 'active' => 'admin.bookings.*', 'icon' => 'calendar', 'roles' => ['superadmin','reception']],
+        ['label' => 'Calendario', 'route' => 'admin.calendar.index', 'active' => 'admin.calendar.*', 'icon' => 'calendar', 'roles' => ['superadmin','reception']],
+        ['label' => 'Chiusure', 'route' => 'admin.closures.index', 'active' => 'admin.closures.*', 'icon' => 'x', 'roles' => ['superadmin','reception']],
         ['label' => 'Camere', 'route' => 'admin.rooms.index', 'active' => 'admin.rooms.*', 'icon' => 'bed', 'roles' => ['superadmin','reception','editor']],
         ['label' => 'Servizi', 'route' => 'admin.services.index', 'active' => 'admin.services.*', 'icon' => 'sparkles', 'roles' => ['superadmin','reception','editor']],
         ['label' => 'Luoghi & Negozi', 'route' => 'admin.places.index', 'active' => 'admin.places.*', 'icon' => 'pin', 'roles' => ['superadmin','editor']],

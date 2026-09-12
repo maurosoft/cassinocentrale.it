@@ -19,10 +19,13 @@
 
         <h2>Titolare del trattamento</h2>
         <p>
-            B&amp;B Cassino Centrale — {{ $bnb['contact']['address'] }}<br>
+            {{ $bnb['legal']['business_name'] }}<br>
+            Titolare: {{ $bnb['legal']['owner'] }}<br>
+            Sede legale: {{ $bnb['legal']['registered_office'] }}<br>
+            Sede operativa: {{ $bnb['contact']['address'] }}<br>
+            Partita IVA: {{ $bnb['legal']['vat'] }}<br>
             Telefono: {{ $bnb['contact']['phone'] }} · Email:
-            <a href="mailto:{{ $bnb['contact']['email'] }}">{{ $bnb['contact']['email'] }}</a><br>
-            <em>[Da completare con ragione sociale, P.IVA/C.F. e legale rappresentante.]</em>
+            <a href="mailto:{{ $bnb['contact']['email'] }}">{{ $bnb['contact']['email'] }}</a>
         </p>
 
         <h2>Quali dati raccogliamo</h2>

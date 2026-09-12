@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DiscoverController;
 use App\Http\Controllers\HomeController;
@@ -23,7 +24,9 @@ Route::get('/scopri-cassino', [DiscoverController::class, 'index'])->name('disco
 
 Route::get('/contatti', [ContactController::class, 'index'])->name('contact');
 
-Route::view('/prenota', 'bookings.create')->name('booking.create');
+Route::get('/prenota', [BookingController::class, 'create'])->name('booking.create');
+Route::post('/prenota', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/prenota/conferma/{reference}', [BookingController::class, 'confirmation'])->name('booking.confirmation');
 
 Route::view('/offline', 'offline')->name('offline');
 
@@ -65,11 +68,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
         });
 
-        // Prenotazioni (superadmin, reception)
+        // Prenotazioni, calendario e chiusure (superadmin, reception)
         Route::middleware('role:superadmin,reception')->group(function () {
             Route::get('bookings', [Admin\BookingController::class, 'index'])->name('bookings.index');
             Route::get('bookings/{booking}', [Admin\BookingController::class, 'show'])->name('bookings.show');
             Route::put('bookings/{booking}', [Admin\BookingController::class, 'update'])->name('bookings.update');
+
+            Route::get('calendar', [Admin\CalendarController::class, 'index'])->name('calendar.index');
+
+            Route::get('closures', [Admin\ClosureController::class, 'index'])->name('closures.index');
+            Route::post('closures', [Admin\ClosureController::class, 'store'])->name('closures.store');
+            Route::delete('closures/{closure}', [Admin\ClosureController::class, 'destroy'])->name('closures.destroy');
         });
 
         // Utenti e manutenzione (solo superadmin)
