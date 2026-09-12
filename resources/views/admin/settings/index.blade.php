@@ -68,6 +68,19 @@
         </div>
     </div>
 
+    {{-- Sconto seconda camera (gruppi) --}}
+    @php($secondDiscount = \App\Support\Settings::get('pricing.second_room_discount_percent', config('bnb.pricing.second_room_discount_percent', 15)))
+    <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">
+        <h2 class="font-serif text-lg text-ink">Sconto seconda camera (gruppi)</h2>
+        <p class="mt-1 text-sm text-ink-light">Quando servono 2 camere (3-4 ospiti), la seconda camera riceve questo sconto.</p>
+        <form method="POST" action="{{ route('admin.settings.pricing') }}" class="mt-4 flex flex-wrap items-center gap-3">
+            @csrf
+            <input type="number" name="second_room_discount_percent" min="0" max="90" value="{{ $secondDiscount }}" class="w-24 rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+            <span class="text-sm text-ink-light">% di sconto sulla seconda camera</span>
+            <button type="submit" class="btn-primary !py-2">Salva</button>
+        </form>
+    </div>
+
     {{-- Notifiche (solo superadmin) --}}
     @if (auth()->user()->isSuperadmin())
         <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">

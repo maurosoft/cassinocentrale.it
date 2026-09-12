@@ -20,7 +20,7 @@ class SettingsController extends Controller
     ];
 
     /** Gruppi gestiti con schede dedicate (non nel form generico). */
-    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche'];
+    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche', 'prezzi'];
 
     public function index(): View
     {
@@ -49,6 +49,23 @@ class SettingsController extends Controller
         );
 
         return redirect()->route('admin.settings.index')->with('success', 'Logo aggiornato.');
+    }
+
+    /** Salva lo sconto per la seconda camera (prenotazioni di gruppo). */
+    public function pricing(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'second_room_discount_percent' => ['required', 'integer', 'min:0', 'max:90'],
+        ], [], [
+            'second_room_discount_percent' => 'sconto seconda camera',
+        ]);
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'pricing.second_room_discount_percent'],
+            ['value' => (string) $data['second_room_discount_percent'], 'type' => 'integer', 'group' => 'prezzi'],
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'Sconto seconda camera aggiornato.');
     }
 
     /** Salva gli interruttori delle notifiche (attive/da inviare). */

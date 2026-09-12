@@ -68,6 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
             Route::post('settings/branding', [Admin\SettingsController::class, 'branding'])->name('settings.branding');
+            Route::post('settings/pricing', [Admin\SettingsController::class, 'pricing'])->name('settings.pricing');
         });
 
         // Prenotazioni, calendario e chiusure (superadmin, reception)

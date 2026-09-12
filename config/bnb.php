@@ -50,6 +50,10 @@ return [
         'long_stay_min_nights' => 3,
         'long_stay_percent' => 10,
         'stack_discounts' => false,
+        // Sconto sulle camere aggiuntive per gruppi (3-4 persone → 2 camere).
+        'second_room_discount_percent' => 15,
+        // Capienza di ogni camera: usata per capire quante camere servono.
+        'room_capacity' => 2,
     ],
 
     'checkin' => [

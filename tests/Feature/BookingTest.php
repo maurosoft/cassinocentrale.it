@@ -44,7 +44,7 @@ class BookingTest extends TestCase
             'check_in' => $in,
             'check_out' => $out,
             'guests' => 2,
-            'room' => $room->slug,
+            'rooms' => [$room->slug],
             'guest_first_name' => 'Mario',
             'guest_last_name' => 'Rossi',
             'guest_email' => 'mario@example.com',
@@ -59,6 +59,30 @@ class BookingTest extends TestCase
         ]);
     }
 
+    public function test_group_booking_creates_two_rooms(): void
+    {
+        $rooms = Room::active()->ordered()->take(2)->get();
+        $in = Carbon::today()->addDays(40)->format('Y-m-d');
+        $out = Carbon::today()->addDays(42)->format('Y-m-d');
+
+        $response = $this->post('/prenota', [
+            'check_in' => $in,
+            'check_out' => $out,
+            'guests' => 3,
+            'rooms' => $rooms->pluck('slug')->all(),
+            'guest_first_name' => 'Gruppo',
+            'guest_last_name' => 'Famiglia',
+            'guest_email' => 'gruppo@example.com',
+            'guest_phone' => '3339998877',
+            'privacy' => '1',
+        ]);
+
+        $response->assertRedirect();
+        $booking = Booking::where('guest_email', 'gruppo@example.com')->first();
+        $this->assertNotNull($booking);
+        $this->assertSame(2, $booking->rooms()->count());
+    }
+
     public function test_privacy_is_required(): void
     {
         $room = Room::active()->first();
@@ -69,7 +93,7 @@ class BookingTest extends TestCase
             'check_in' => $in,
             'check_out' => $out,
             'guests' => 2,
-            'room' => $room->slug,
+            'rooms' => [$room->slug],
             'guest_first_name' => 'Mario',
             'guest_last_name' => 'Rossi',
             'guest_email' => 'mario@example.com',

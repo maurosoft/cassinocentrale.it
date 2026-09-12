@@ -9,14 +9,13 @@
             <span class="eyebrow">Prenota</span>
             <h1 class="section-title text-balance">Verifica disponibilità e prenota</h1>
             <p class="mx-auto mt-4 max-w-2xl text-ink-light">
-                Scegli le date del soggiorno: ti mostriamo le camere libere e il prezzo, sconti inclusi.
-                Prenotando direttamente con noi hai sempre la miglior tariffa.
+                Scegli le date e il numero di ospiti: ti mostriamo le camere e i prezzi.
+                Le nostre camere sono tutte matrimoniali, quindi per 3-4 persone proponiamo due camere.
             </p>
         </div>
     </section>
 
     <section class="container-bnb py-10">
-        {{-- Messaggi --}}
         @if ($error)
             <div class="mx-auto mb-6 max-w-3xl rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">{{ $error }}</div>
         @endif
@@ -24,13 +23,12 @@
             <div class="mx-auto mb-6 max-w-3xl rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>
         @endif
 
-        {{-- Ricerca disponibilità --}}
+        {{-- Ricerca --}}
         <form method="GET" action="{{ route('booking.create') }}" class="mx-auto max-w-3xl rounded-2xl border border-cream-300 bg-white p-5 shadow-sm sm:p-6">
             <div class="grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end">
                 <div>
                     <label class="block text-sm font-medium text-ink">Arrivo → Partenza</label>
-                    <input type="text" data-date-range
-                           data-disabled='@json($blockedDates)'
+                    <input type="text" data-date-range data-disabled='@json($blockedDates)'
                            @if ($checkIn && $checkOut) data-start="{{ $checkIn->format('Y-m-d') }}" data-end="{{ $checkOut->format('Y-m-d') }}" @endif
                            placeholder="Scegli le date"
                            class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" readonly>
@@ -45,58 +43,62 @@
                         @endfor
                     </select>
                 </div>
-                <button type="submit" class="btn-primary sm:mb-0">Cerca</button>
+                <button type="submit" class="btn-primary">Cerca</button>
             </div>
             <p class="mt-2 text-xs text-ink-soft">I giorni non selezionabili sono già occupati o chiusi.</p>
         </form>
 
         {{-- Risultati --}}
         @if ($checkIn && $checkOut && ! $error)
-            <div class="mx-auto mt-8 max-w-5xl">
-                <p class="text-sm text-ink-light">
-                    <strong class="text-ink">{{ $checkIn->format('d/m/Y') }} → {{ $checkOut->format('d/m/Y') }}</strong>
-                    · {{ $nights }} {{ $nights === 1 ? 'notte' : 'notti' }} · {{ $guests }} {{ $guests === 1 ? 'ospite' : 'ospiti' }}
-                </p>
+            @php($selectedCount = $selectedRooms->count())
+            <div id="camere" class="mx-auto mt-8 max-w-5xl scroll-mt-24">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <p class="text-sm text-ink-light">
+                        <strong class="text-ink">{{ $checkIn->format('d/m/Y') }} → {{ $checkOut->format('d/m/Y') }}</strong>
+                        · {{ $nights }} {{ $nights === 1 ? 'notte' : 'notti' }} · {{ $guests }} {{ $guests === 1 ? 'ospite' : 'ospiti' }}
+                    </p>
+                    @if ($roomsNeeded > 1)
+                        <span class="rounded-full bg-clay-50 px-3 py-1 text-xs font-medium text-clay-700">Servono {{ $roomsNeeded }} camere · scelte {{ $selectedCount }}/{{ $roomsNeeded }}</span>
+                    @endif
+                </div>
 
                 <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach ($roomsGrid as $entry)
                         @php($room = $entry['room'])
-                        @php($q = $entry['quote'])
-                        <article class="card flex flex-col">
+                        @php($isSelected = $entry['selected'])
+                        @php($selectionFull = $selectedCount >= $roomsNeeded)
+                        <article class="card flex flex-col {{ $isSelected ? 'ring-2 ring-clay-400' : '' }}">
                             <div class="relative aspect-[4/3] overflow-hidden bg-cream-200">
                                 <img src="{{ \Illuminate\Support\Str::startsWith($room->coverImage(), ['http','/']) ? $room->coverImage() : asset($room->coverImage()) }}"
                                      alt="Camera {{ $room->number_name }}"
                                      class="h-full w-full object-cover {{ $entry['available'] ? '' : 'grayscale' }}" loading="lazy">
                                 @unless ($entry['available'])
                                     <div class="absolute inset-0 bg-ink/25"></div>
-                                    <div class="absolute left-[-25%] top-1/2 w-[150%] -translate-y-1/2 -rotate-[14deg] py-1.5 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg {{ $entry['fits'] ? 'bg-red-600/90' : 'bg-ink/80' }}">
-                                        {{ $entry['fits'] ? 'Occupata' : 'Non adatta' }}
-                                    </div>
+                                    <div class="absolute left-[-25%] top-1/2 w-[150%] -translate-y-1/2 -rotate-[14deg] bg-red-600/90 py-1.5 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg">Occupata</div>
                                 @endunless
+                                @if ($isSelected)
+                                    <span class="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-clay-600 px-2 py-1 text-xs font-medium text-white"><x-icon name="check" class="h-3.5 w-3.5"/> Scelta</span>
+                                @endif
                             </div>
                             <div class="flex flex-1 flex-col p-5">
                                 <span class="badge-clay w-fit">Camera {{ $room->number_name }}</span>
                                 <h3 class="mt-2 font-serif text-lg text-ink">{{ $room->name ?: 'Camera '.$room->number_name }}</h3>
                                 <p class="mt-1 flex-1 text-sm text-ink-light">{{ $room->short_description }}</p>
 
-                                @if ($entry['available'] && $q)
-                                    <div class="mt-4 rounded-xl bg-cream-50 p-3 text-sm">
-                                        @if ($q['discount_percent'] > 0)
-                                            <p class="text-ink-soft"><span class="line-through">€{{ number_format($q['base'], 2, ',', '.') }}</span>
-                                            <span class="ml-1 rounded bg-sage-100 px-1.5 py-0.5 text-xs font-medium text-sage-700">-{{ (int) $q['discount_percent'] }}% {{ $q['discount_label'] }}</span></p>
-                                        @endif
-                                        <p class="font-serif text-2xl font-semibold text-clay-700">€{{ number_format($q['price_per_night'], 2, ',', '.') }}<span class="text-sm font-normal text-ink-soft"> / notte</span></p>
-                                        <p class="mt-1 text-ink-light">Totale: <strong class="text-ink">€{{ number_format($q['subtotal'], 2, ',', '.') }}</strong></p>
-                                    </div>
-                                    <a href="{{ route('booking.create', ['checkin' => $checkIn->format('Y-m-d'), 'checkout' => $checkOut->format('Y-m-d'), 'guests' => $guests, 'room' => $room->slug]) }}#prenota"
-                                       class="btn-primary mt-4 {{ $selectedRoom && $selectedRoom->id === $room->id ? 'ring-2 ring-clay-300 ring-offset-2' : '' }}">
-                                        {{ $selectedRoom && $selectedRoom->id === $room->id ? 'Camera scelta ✓' : 'Prenota' }}
-                                    </a>
+                                @if ($entry['available'])
+                                    <p class="mt-3 text-sm text-ink-soft">da <span class="font-serif text-xl font-semibold text-clay-700">€{{ number_format($room->base_price, 0, ',', '.') }}</span> / notte</p>
+                                    @if ($isSelected)
+                                        <a href="{{ route('booking.create', ['checkin' => $checkIn->format('Y-m-d'), 'checkout' => $checkOut->format('Y-m-d'), 'guests' => $guests, 'rooms' => $selectedSlugs->reject(fn ($s) => $s === $room->slug)->values()->all()]) }}#camere"
+                                           class="btn-outline mt-3">Rimuovi</a>
+                                    @elseif (! $selectionFull)
+                                        <a href="{{ route('booking.create', ['checkin' => $checkIn->format('Y-m-d'), 'checkout' => $checkOut->format('Y-m-d'), 'guests' => $guests, 'rooms' => $selectedSlugs->merge([$room->slug])->unique()->values()->all()]) }}#camere"
+                                           class="btn-primary mt-3">{{ $roomsNeeded > 1 ? 'Aggiungi' : 'Prenota' }}</a>
+                                    @else
+                                        <button type="button" disabled class="btn-ghost mt-3 cursor-not-allowed opacity-60">Hai già scelto {{ $roomsNeeded }} camere</button>
+                                    @endif
                                 @else
                                     <div class="mt-4 rounded-xl bg-cream-50 p-3 text-center text-sm text-ink-soft">
-                                        @if (! $entry['fits'])
-                                            Adatta fino a {{ $room->max_guests }} ospiti.
-                                        @elseif ($entry['conflict'])
+                                        @if ($entry['conflict'])
                                             <p class="font-medium text-ink">Occupata dal {{ $entry['conflict']['from']->format('d/m') }} al {{ $entry['conflict']['to']->format('d/m') }}</p>
                                             <p class="mt-1 text-xs">Prova altre date o un'altra camera.</p>
                                         @else
@@ -115,25 +117,33 @@
                         <p class="mt-1 text-sm text-ink-light">Prova a cambiare le date, oppure contattaci.</p>
                         <a href="tel:{{ $bnb['contact']['phone_raw'] }}" class="btn-outline mt-3">Chiamaci: {{ $bnb['contact']['phone'] }}</a>
                     </div>
+                @elseif ($roomsNeeded > 1 && $selectedCount < $roomsNeeded)
+                    <p class="mt-6 text-center text-sm text-ink-light">Seleziona <strong class="text-ink">{{ $roomsNeeded - $selectedCount }}</strong> {{ ($roomsNeeded - $selectedCount) === 1 ? 'altra camera' : 'camere' }} per proseguire.</p>
                 @endif
             </div>
         @endif
 
-        {{-- Form dati ospite (quando una camera è selezionata) --}}
-        @if ($selectedRoom && $selectedQuote)
+        {{-- Form dati ospite (quando la selezione è completa) --}}
+        @if ($quote)
             <div id="prenota" class="mx-auto mt-12 max-w-3xl scroll-mt-24">
                 <div class="rounded-2xl border border-clay-200 bg-white p-6 shadow-sm">
                     <h2 class="font-serif text-2xl text-ink">Completa la tua richiesta</h2>
 
                     {{-- Riepilogo --}}
-                    <div class="mt-4 rounded-xl bg-cream-50 p-4 text-sm text-ink-light">
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                            <span><strong class="text-ink">{{ $selectedRoom->name ?: 'Camera '.$selectedRoom->number_name }}</strong> (Camera {{ $selectedRoom->number_name }})</span>
-                            <span>{{ $checkIn->format('d/m/Y') }} → {{ $checkOut->format('d/m/Y') }}</span>
-                        </div>
-                        <div class="mt-2 flex items-center justify-between border-t border-cream-300 pt-2">
-                            <span>{{ $selectedQuote['nights'] }} {{ $selectedQuote['nights'] === 1 ? 'notte' : 'notti' }} · {{ $guests }} {{ $guests === 1 ? 'ospite' : 'ospiti' }}@if ($selectedQuote['discount_percent'] > 0) · sconto {{ (int) $selectedQuote['discount_percent'] }}%@endif</span>
-                            <span class="font-serif text-xl font-semibold text-clay-700">€{{ number_format($selectedQuote['subtotal'], 2, ',', '.') }}</span>
+                    <div class="mt-4 space-y-2 rounded-xl bg-cream-50 p-4 text-sm text-ink-light">
+                        <p class="text-xs">{{ $checkIn->format('d/m/Y') }} → {{ $checkOut->format('d/m/Y') }} · {{ $nights }} {{ $nights === 1 ? 'notte' : 'notti' }} · {{ $guests }} {{ $guests === 1 ? 'ospite' : 'ospiti' }}</p>
+                        @foreach ($quote['rooms'] as $row)
+                            <div class="flex items-center justify-between border-t border-cream-300 pt-2">
+                                <span>
+                                    <strong class="text-ink">{{ $row['room']->name ?: 'Camera '.$row['room']->number_name }}</strong>
+                                    @if (($row['discount_percent'] ?? 0) > 0)<span class="ml-1 rounded bg-sage-100 px-1.5 py-0.5 text-xs font-medium text-sage-700">-{{ (int) $row['discount_percent'] }}% {{ $row['discount_label'] }}</span>@endif
+                                </span>
+                                <span class="font-medium text-ink">€{{ number_format($row['subtotal'], 2, ',', '.') }}</span>
+                            </div>
+                        @endforeach
+                        <div class="flex items-center justify-between border-t border-cream-300 pt-2 text-base">
+                            <span class="font-medium text-ink">Totale</span>
+                            <span class="font-serif text-xl font-semibold text-clay-700">€{{ number_format($quote['total'], 2, ',', '.') }}</span>
                         </div>
                     </div>
 
@@ -148,7 +158,9 @@
                         <input type="hidden" name="check_in" value="{{ $checkIn->format('Y-m-d') }}">
                         <input type="hidden" name="check_out" value="{{ $checkOut->format('Y-m-d') }}">
                         <input type="hidden" name="guests" value="{{ $guests }}">
-                        <input type="hidden" name="room" value="{{ $selectedRoom->slug }}">
+                        @foreach ($selectedRooms as $r)
+                            <input type="hidden" name="rooms[]" value="{{ $r->slug }}">
+                        @endforeach
 
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
@@ -178,7 +190,7 @@
                         </label>
 
                         <div class="rounded-lg bg-sage-50 p-3 text-xs text-ink-light">
-                            💡 La prenotazione è una <strong>richiesta</strong>: ti confermeremo noi la disponibilità. Il pagamento si effettua in struttura (i pagamenti online arriveranno a breve).
+                            💡 La prenotazione è una <strong>richiesta</strong>: ti confermeremo noi la disponibilità. Il pagamento si effettua in struttura.
                         </div>
 
                         <button type="submit" class="btn-primary w-full">Invia richiesta di prenotazione</button>

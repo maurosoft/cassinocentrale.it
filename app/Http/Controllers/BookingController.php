@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BookingStoreRequest;
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Room;
 use App\Services\AvailabilityService;
 use App\Services\PricingService;
@@ -20,16 +21,22 @@ class BookingController extends Controller
         private readonly PricingService $pricing,
     ) {}
 
-    /** Pagina "Prenota": ricerca disponibilità e (se scelta) form ospite. */
+    /** Pagina "Prenota": ricerca disponibilità, scelta camere e form ospite. */
     public function create(Request $request): View
     {
         [$checkIn, $checkOut] = $this->parseDates($request);
-        $guests = (int) $request->integer('guests', 2);
-        $guests = max(1, min($guests, 4));
+        $guests = max(1, min((int) $request->integer('guests', 2), 4));
+        $roomsNeeded = $this->pricing->roomsNeeded($guests);
 
-        $roomsGrid = collect(); // tutte le camere con stato disponibile/occupata
-        $selectedRoom = null;
-        $selectedQuote = null;
+        // Camere già scelte (slug) — supporta anche il vecchio parametro ?room=
+        $selectedSlugs = collect($request->query('rooms', []))->filter()->unique()->values();
+        if ($selectedSlugs->isEmpty() && $request->query('room')) {
+            $selectedSlugs = collect([$request->query('room')]);
+        }
+
+        $roomsGrid = collect();
+        $selectedRooms = collect();
+        $quote = null;   // ['rooms' => [...], 'total' => float]
         $nights = 0;
         $error = null;
 
@@ -39,64 +46,63 @@ class BookingController extends Controller
             } else {
                 $nights = (int) $checkIn->diffInDays($checkOut);
 
-                // Mostriamo TUTTE le camere attive, segnando quelle occupate.
-                $roomsGrid = Room::active()->ordered()->with('services')->get()->map(function (Room $room) use ($checkIn, $checkOut, $guests, $nights) {
-                    $fits = $room->max_guests >= $guests;
-                    $free = $fits && $this->availability->isRoomAvailable($room, $checkIn, $checkOut);
-
-                    // Se occupata, calcoliamo il periodo per mostrare "Occupata dal … al …"
-                    $conflict = (! $free && $fits) ? $this->availability->conflictRange($room, $checkIn, $checkOut) : null;
+                $roomsGrid = Room::active()->ordered()->with('services')->get()->map(function (Room $room) use ($checkIn, $checkOut, $selectedSlugs) {
+                    $available = $this->availability->isRoomAvailable($room, $checkIn, $checkOut);
 
                     return [
                         'room' => $room,
-                        'available' => $free,
-                        'fits' => $fits,
-                        'conflict' => $conflict,
-                        'quote' => $free ? $this->pricing->quote($room, $nights, $guests) : null,
+                        'available' => $available,
+                        'selected' => $available && $selectedSlugs->contains($room->slug),
+                        'conflict' => $available ? null : $this->availability->conflictRange($room, $checkIn, $checkOut),
                     ];
                 });
 
-                // Camera preselezionata (da link "Prenota questa camera")
-                if ($slug = $request->query('room')) {
-                    $entry = $roomsGrid->firstWhere(fn ($e) => $e['room']->slug === $slug && $e['available']);
-                    if ($entry) {
-                        $selectedRoom = $entry['room'];
-                        $selectedQuote = $entry['quote'];
-                    }
+                // Camere selezionate valide (disponibili), limitate al numero richiesto
+                $selectedRooms = $roomsGrid->filter(fn ($e) => $e['selected'])
+                    ->map(fn ($e) => $e['room'])
+                    ->take($roomsNeeded)
+                    ->values();
+
+                if ($selectedRooms->count() === $roomsNeeded) {
+                    $quote = $this->buildQuote($selectedRooms, $nights, $guests, $roomsNeeded);
                 }
             }
         }
 
-        // Date non selezionabili nel calendario (giorni tutti pieni/chiusi)
         $blockedDates = $this->availability->fullyUnavailableDates();
 
         return view('bookings.create', compact(
-            'checkIn', 'checkOut', 'guests', 'nights',
-            'roomsGrid', 'selectedRoom', 'selectedQuote',
+            'checkIn', 'checkOut', 'guests', 'nights', 'roomsNeeded',
+            'roomsGrid', 'selectedSlugs', 'selectedRooms', 'quote',
             'blockedDates', 'error',
         ));
     }
 
-    /** Registra la richiesta di prenotazione. */
+    /** Registra la richiesta di prenotazione (una o più camere). */
     public function store(BookingStoreRequest $request): RedirectResponse
     {
         $checkIn = Carbon::parse($request->date('check_in'))->startOfDay();
         $checkOut = Carbon::parse($request->date('check_out'))->startOfDay();
         $guests = (int) $request->integer('guests');
-        $room = Room::where('slug', $request->input('room'))->firstOrFail();
+        $roomsNeeded = $this->pricing->roomsNeeded($guests);
 
-        // Ricontrollo la disponibilità lato server (sicurezza anti doppie prenotazioni)
-        if (! $this->availability->isRoomAvailable($room, $checkIn, $checkOut)) {
-            return back()
-                ->withInput()
-                ->with('error', 'Spiacenti, questa camera non è più disponibile per le date scelte. Prova con altre date.');
+        $rooms = Room::active()->whereIn('slug', (array) $request->input('rooms', []))->get();
+
+        if ($rooms->count() !== $roomsNeeded) {
+            return back()->withInput()->with('error', "Per {$guests} ospiti servono {$roomsNeeded} camere. Riprova la selezione.");
+        }
+
+        // Ricontrollo disponibilità di tutte le camere
+        foreach ($rooms as $room) {
+            if (! $this->availability->isRoomAvailable($room, $checkIn, $checkOut)) {
+                return back()->withInput()->with('error', 'Una delle camere non è più disponibile per le date scelte. Riprova.');
+            }
         }
 
         $nights = (int) $checkIn->diffInDays($checkOut);
-        $quote = $this->pricing->quote($room, $nights, $guests);
+        $quote = $this->buildQuote($rooms, $nights, $guests, $roomsNeeded);
 
-        // Registro/aggiorno il cliente nel registro clienti
-        $customer = \App\Models\Customer::upsertFrom([
+        $customer = Customer::upsertFrom([
             'first_name' => $request->input('guest_first_name'),
             'last_name' => $request->input('guest_last_name'),
             'email' => $request->input('guest_email'),
@@ -106,32 +112,33 @@ class BookingController extends Controller
         $booking = Booking::create([
             'customer_id' => $customer->id,
             'reference' => $this->uniqueReference(),
-            'guest_name' => trim($request->input('guest_first_name').' '.$request->input('guest_last_name')),
-            'guest_email' => $request->input('guest_email'),
-            'guest_phone' => $request->input('guest_phone'),
+            'guest_name' => $customer->fullName(),
+            'guest_email' => $customer->email,
+            'guest_phone' => $customer->phone,
             'check_in' => $checkIn,
             'check_out' => $checkOut,
             'number_of_guests' => $guests,
             'notes' => $request->input('notes'),
-            'status' => Booking::STATUS_DRAFT, // richiesta da confermare
-            'total_price' => $quote['subtotal'],
-            'discount_percent' => $quote['discount_percent'],
+            'status' => Booking::STATUS_DRAFT,
+            'total_price' => $quote['total'],
+            'discount_percent' => 0,
             'payment_status' => Booking::PAYMENT_UNPAID,
         ]);
 
-        $booking->rooms()->create([
-            'room_id' => $room->id,
-            'price_per_night' => $quote['price_per_night'],
-            'nights' => $quote['nights'],
-            'subtotal' => $quote['subtotal'],
-        ]);
+        foreach ($quote['rooms'] as $row) {
+            $booking->rooms()->create([
+                'room_id' => $row['room']->id,
+                'price_per_night' => $row['price_per_night'],
+                'nights' => $row['nights'],
+                'subtotal' => $row['subtotal'],
+            ]);
+        }
 
         // NB: l'invio automatico di email/WhatsApp arriverà in Fase 4.
 
         return redirect()->route('booking.confirmation', $booking->reference);
     }
 
-    /** Pagina di conferma della richiesta. */
     public function confirmation(string $reference): View
     {
         $booking = Booking::with('rooms.room')->where('reference', $reference)->firstOrFail();
@@ -139,13 +146,27 @@ class BookingController extends Controller
         return view('bookings.confirmation', compact('booking'));
     }
 
-    /** Legge e valida le date dalla query string. */
+    /** Costruisce il preventivo (1 camera con regole standard, 2+ camere con sconto gruppo). */
+    private function buildQuote($rooms, int $nights, int $guests, int $roomsNeeded): array
+    {
+        if ($roomsNeeded === 1) {
+            $room = $rooms->first();
+            $q = $this->pricing->quote($room, $nights, $guests);
+
+            return [
+                'rooms' => [array_merge($q, ['room' => $room])],
+                'total' => $q['subtotal'],
+            ];
+        }
+
+        return $this->pricing->quoteGroup(collect($rooms), $nights);
+    }
+
     private function parseDates(Request $request): array
     {
         $checkIn = $this->toDate($request->query('checkin'));
         $checkOut = $this->toDate($request->query('checkout'));
 
-        // Non permettere date passate per l'arrivo
         if ($checkIn && $checkIn->lt(Carbon::today())) {
             $checkIn = null;
             $checkOut = null;
