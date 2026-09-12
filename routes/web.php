@@ -27,6 +27,11 @@ Route::view('/prenota', 'bookings.create')->name('booking.create');
 
 Route::view('/offline', 'offline')->name('offline');
 
+// Pagine legali
+Route::view('/privacy', 'legal.privacy')->name('legal.privacy');
+Route::view('/cookie-policy', 'legal.cookie')->name('legal.cookie');
+Route::view('/termini', 'legal.terms')->name('legal.terms');
+
 /*
 |--------------------------------------------------------------------------
 | Area riservata (admin)

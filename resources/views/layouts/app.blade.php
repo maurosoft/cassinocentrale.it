@@ -44,6 +44,7 @@
     </main>
 
     @include('partials.footer')
+    @include('partials.cookie-banner')
 
     {{-- Qui, in una fase successiva, andrà il widget del chatbot (in basso a destra). --}}
 

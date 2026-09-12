@@ -32,9 +32,24 @@
     </div>
 
     <div class="border-t border-sage-700">
-        <div class="container-bnb flex flex-col items-center justify-between gap-2 py-5 text-xs text-cream-200/70 sm:flex-row">
-            <p>&copy; {{ date('Y') }} B&amp;B Cassino Centrale. Tutti i diritti riservati.</p>
-            <p>Struttura a conduzione femminile · Viale Dante 6, Cassino (FR)</p>
+        <div class="container-bnb flex flex-col items-center gap-3 py-5 text-xs text-cream-200/70">
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                <a href="{{ route('legal.privacy') }}" class="hover:text-white">Privacy Policy</a>
+                <span class="text-sage-600">·</span>
+                <a href="{{ route('legal.cookie') }}" class="hover:text-white">Cookie Policy</a>
+                <span class="text-sage-600">·</span>
+                <a href="{{ route('legal.terms') }}" class="hover:text-white">Termini e Condizioni</a>
+            </div>
+            <div class="flex flex-col items-center justify-between gap-2 sm:w-full sm:flex-row">
+                <p>&copy; {{ date('Y') }} B&amp;B Cassino Centrale · Viale Dante 6, Cassino (FR)</p>
+                <p class="flex items-center gap-1.5">
+                    Realizzato con
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#e11d48" aria-label="cuore" role="img">
+                        <path d="M12 21s-6.7-4.35-9.33-8.02C.9 10.48 1.36 7.2 3.7 5.6a4.6 4.6 0 0 1 6 .77L12 8.9l2.3-2.53a4.6 4.6 0 0 1 6-.77c2.34 1.6 2.8 4.88 1.03 7.38C18.7 16.65 12 21 12 21z"/>
+                    </svg>
+                    da <a href="https://promoweb.me" target="_blank" rel="noopener" class="font-medium text-cream-100 underline decoration-dotted underline-offset-2 hover:text-white">PromoWeb</a>
+                </p>
+            </div>
         </div>
     </div>
 </footer>
