@@ -88,6 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
 
             Route::get('logs/email', [Admin\LogController::class, 'email'])->name('logs.email');
+            Route::get('logs/whatsapp', [Admin\LogController::class, 'whatsapp'])->name('logs.whatsapp');
 
             Route::get('calendar', [Admin\CalendarController::class, 'index'])->name('calendar.index');
 
@@ -99,6 +100,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Utenti e manutenzione (solo superadmin)
         Route::middleware('role:superadmin')->group(function () {
             Route::resource('users', Admin\UserController::class)->except('show');
+
+            Route::get('whatsapp', [Admin\WhatsappController::class, 'index'])->name('whatsapp.index');
+            Route::post('whatsapp/settings', [Admin\WhatsappController::class, 'settings'])->name('whatsapp.settings');
+            Route::post('whatsapp/providers', [Admin\WhatsappController::class, 'store'])->name('whatsapp.store');
+            Route::put('whatsapp/providers/{provider}', [Admin\WhatsappController::class, 'update'])->name('whatsapp.update');
+            Route::delete('whatsapp/providers/{provider}', [Admin\WhatsappController::class, 'destroy'])->name('whatsapp.destroy');
+            Route::post('whatsapp/test', [Admin\WhatsappController::class, 'test'])->name('whatsapp.test');
+
             Route::post('settings/maintenance', [Admin\SettingsController::class, 'maintenance'])->name('settings.maintenance');
             Route::post('settings/notifications', [Admin\SettingsController::class, 'notifications'])->name('settings.notifications');
             Route::post('settings/smtp', [Admin\SettingsController::class, 'smtp'])->name('settings.smtp');
