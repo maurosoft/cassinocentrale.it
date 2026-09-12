@@ -71,6 +71,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Prenotazioni, calendario e chiusure (superadmin, reception)
         Route::middleware('role:superadmin,reception')->group(function () {
             Route::get('bookings', [Admin\BookingController::class, 'index'])->name('bookings.index');
+            Route::get('bookings/create', [Admin\BookingController::class, 'create'])->name('bookings.create');
+            Route::post('bookings', [Admin\BookingController::class, 'store'])->name('bookings.store');
             Route::get('bookings/{booking}', [Admin\BookingController::class, 'show'])->name('bookings.show');
             Route::put('bookings/{booking}', [Admin\BookingController::class, 'update'])->name('bookings.update');
 

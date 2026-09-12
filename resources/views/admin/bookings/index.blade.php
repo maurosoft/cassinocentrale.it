@@ -3,6 +3,11 @@
 @section('title', 'Prenotazioni')
 
 @section('content')
+    <div class="mb-5 flex items-center justify-between">
+        <p class="text-sm text-ink-light">Gestione prenotazioni</p>
+        <a href="{{ route('admin.bookings.create') }}" class="btn-primary !py-2.5"><x-icon name="plus" class="h-4 w-4"/> Nuova prenotazione</a>
+    </div>
+
     {{-- Filtri --}}
     <form method="GET" class="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-cream-300 bg-white p-4">
         <div>

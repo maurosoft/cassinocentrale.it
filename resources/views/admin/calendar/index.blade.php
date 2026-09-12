@@ -38,14 +38,21 @@
                             @php($cell = $grid[$room->id][$day->format('Y-m-d')] ?? null)
                             <td class="border-l border-cream-100 p-0.5">
                                 @if ($cell)
-                                    <div class="group relative flex h-8 items-center justify-center rounded
-                                        @class([
-                                            'bg-sage-200 text-sage-800' => $cell['type'] === 'booked',
-                                            'bg-amber-200 text-amber-900' => $cell['type'] === 'request',
-                                            'bg-cream-300 text-ink-soft' => $cell['type'] === 'closed',
-                                        ])" title="{{ $cell['label'] }}">
-                                        <span class="truncate px-1" style="max-width:30px">{{ \Illuminate\Support\Str::of($cell['label'])->substr(0, 2) }}</span>
-                                    </div>
+                                    @php($cellClasses = 'flex h-8 items-center justify-center rounded '.match($cell['type']) {
+                                        'booked' => 'bg-sage-200 text-sage-800',
+                                        'request' => 'bg-amber-200 text-amber-900',
+                                        'closed' => 'bg-cream-300 text-ink-soft',
+                                        default => 'bg-cream-100',
+                                    })
+                                    @if ($cell['ref'])
+                                        <a href="{{ route('admin.bookings.show', $cell['ref']) }}" class="{{ $cellClasses }} transition hover:brightness-95" title="{{ $cell['label'] }} — apri scheda">
+                                            <span class="truncate px-1" style="max-width:30px">{{ \Illuminate\Support\Str::of($cell['label'])->substr(0, 2) }}</span>
+                                        </a>
+                                    @else
+                                        <div class="{{ $cellClasses }}" title="{{ $cell['label'] }}">
+                                            <span class="truncate px-1" style="max-width:30px">{{ \Illuminate\Support\Str::of($cell['label'])->substr(0, 2) }}</span>
+                                        </div>
+                                    @endif
                                 @else
                                     <div class="h-8 rounded bg-cream-50"></div>
                                 @endif

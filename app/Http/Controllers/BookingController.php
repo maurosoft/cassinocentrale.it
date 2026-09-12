@@ -83,7 +83,16 @@ class BookingController extends Controller
         $nights = (int) $checkIn->diffInDays($checkOut);
         $quote = $this->pricing->quote($room, $nights, $guests);
 
+        // Registro/aggiorno il cliente nel registro clienti
+        $customer = \App\Models\Customer::upsertFrom([
+            'first_name' => $request->input('guest_first_name'),
+            'last_name' => $request->input('guest_last_name'),
+            'email' => $request->input('guest_email'),
+            'phone' => $request->input('guest_phone'),
+        ]);
+
         $booking = Booking::create([
+            'customer_id' => $customer->id,
             'reference' => $this->uniqueReference(),
             'guest_name' => trim($request->input('guest_first_name').' '.$request->input('guest_last_name')),
             'guest_email' => $request->input('guest_email'),

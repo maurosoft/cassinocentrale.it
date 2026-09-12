@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Booking extends Model
@@ -30,6 +31,7 @@ class Booking extends Model
     public const PAYMENT_REFUNDED = 'refunded';
 
     protected $fillable = [
+        'customer_id',
         'reference',
         'guest_name',
         'guest_email',
@@ -59,6 +61,11 @@ class Booking extends Model
     public function rooms(): HasMany
     {
         return $this->hasMany(BookingRoom::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     /** Numero di notti del soggiorno. */
