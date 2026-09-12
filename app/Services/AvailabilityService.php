@@ -77,23 +77,55 @@ class AvailabilityService
      * Date completamente non disponibili nei prossimi $months mesi
      * (nessuna camera libera): servono a "spegnere" i giorni nel calendario.
      * Ritorna un array di stringhe 'Y-m-d'.
+     *
+     * Carica i dati UNA volta sola e poi calcola in memoria (veloce).
      */
     public function fullyUnavailableDates(int $months = 8): array
     {
         $start = Carbon::today();
         $end = $start->copy()->addMonths($months);
-        $totalRooms = Room::active()->count();
+        $roomIds = Room::active()->pluck('id');
+        $totalRooms = $roomIds->count();
 
         if ($totalRooms === 0) {
             return [];
         }
 
+        // Prenotazioni bloccanti nel periodo (una sola query)
+        $bookingRooms = BookingRoom::whereHas('booking', function ($q) use ($start, $end) {
+            $q->whereIn('status', self::BLOCKING_STATUSES)
+                ->whereDate('check_in', '<', $end)
+                ->whereDate('check_out', '>', $start);
+        })->with('booking:id,check_in,check_out')->get();
+
+        // Chiusure nel periodo (una sola query)
+        $closures = RoomClosure::whereDate('start_date', '<', $end)
+            ->whereDate('end_date', '>=', $start)
+            ->get();
+
         $blocked = [];
         for ($day = $start->copy(); $day->lt($end); $day->addDay()) {
-            $next = $day->copy()->addDay();
-            // quante camere libere per la notte $day -> $next?
-            $free = $this->availableRooms($day, $next, 1)->count();
-            if ($free === 0) {
+            $unavailable = [];
+
+            foreach ($bookingRooms as $br) {
+                $b = $br->booking;
+                if ($b && $b->check_in->lte($day) && $b->check_out->gt($day)) {
+                    $unavailable[$br->room_id] = true;
+                }
+            }
+
+            foreach ($closures as $c) {
+                if ($c->start_date->lte($day) && $c->end_date->gte($day)) {
+                    if ($c->room_id === null) {
+                        // Chiusura di tutto il B&B: tutte le camere non disponibili
+                        $unavailable = array_fill_keys($roomIds->all(), true);
+                        break;
+                    }
+                    $unavailable[$c->room_id] = true;
+                }
+            }
+
+            if (count($unavailable) >= $totalRooms) {
                 $blocked[] = $day->format('Y-m-d');
             }
         }
