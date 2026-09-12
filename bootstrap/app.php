@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Gli utenti non autenticati vengono mandati alla pagina di login admin.
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
+
+        // Il webhook di Stripe non invia il token CSRF: va escluso.
+        $middleware->validateCsrfTokens(except: ['stripe/webhook']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -17,8 +17,8 @@ class MaintenanceMode
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Non bloccare mai l'area riservata, il login e il controllo di salute.
-        if ($request->is('admin', 'admin/*', 'up')) {
+        // Non bloccare mai l'area riservata, il login, il controllo di salute e i webhook.
+        if ($request->is('admin', 'admin/*', 'up', 'stripe/*')) {
             return $next($request);
         }
 

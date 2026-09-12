@@ -21,7 +21,7 @@ class SettingsController extends Controller
     ];
 
     /** Gruppi gestiti con schede dedicate (non nel form generico). */
-    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche', 'prezzi', 'smtp'];
+    private const SPECIAL_GROUPS = ['manutenzione', 'branding', 'notifiche', 'prezzi', 'smtp', 'stripe'];
 
     public function index(): View
     {
@@ -87,6 +87,31 @@ class SettingsController extends Controller
         }
 
         return redirect()->route('admin.settings.index')->with('success', 'Impostazioni email salvate.');
+    }
+
+    /** Salva la configurazione Stripe (pagamenti online). */
+    public function stripe(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'public_key' => ['nullable', 'string', 'max:255'],
+            'secret_key' => ['nullable', 'string', 'max:255'],
+            'webhook_secret' => ['nullable', 'string', 'max:255'],
+            'deposit_percent' => ['required', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        SiteSetting::updateOrCreate(['key' => 'stripe.enabled'], ['value' => $request->boolean('enabled') ? '1' : '0', 'type' => 'boolean', 'group' => 'stripe']);
+        SiteSetting::updateOrCreate(['key' => 'stripe.deposit_percent'], ['value' => (string) $data['deposit_percent'], 'type' => 'integer', 'group' => 'stripe']);
+        SiteSetting::updateOrCreate(['key' => 'stripe.public_key'], ['value' => $data['public_key'] ?? '', 'type' => 'string', 'group' => 'stripe']);
+
+        // Chiavi segrete: aggiornate solo se inserite (vuoto = invariate).
+        if (! empty($data['secret_key'])) {
+            SiteSetting::updateOrCreate(['key' => 'stripe.secret_key'], ['value' => $data['secret_key'], 'type' => 'string', 'group' => 'stripe']);
+        }
+        if (! empty($data['webhook_secret'])) {
+            SiteSetting::updateOrCreate(['key' => 'stripe.webhook_secret'], ['value' => $data['webhook_secret'], 'type' => 'string', 'group' => 'stripe']);
+        }
+
+        return redirect()->route('admin.settings.index')->with('success', 'Impostazioni Stripe salvate.');
     }
 
     /** Invia un'email di prova. */

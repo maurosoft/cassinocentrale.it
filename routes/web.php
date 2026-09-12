@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DiscoverController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,6 +30,9 @@ Route::get('/contatti', [ContactController::class, 'index'])->name('contact');
 Route::get('/prenota', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/prenota', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/prenota/conferma/{reference}', [BookingController::class, 'confirmation'])->name('booking.confirmation');
+Route::get('/prenota/{reference}/paga', [StripeController::class, 'pay'])->name('booking.pay');
+Route::get('/prenota/{reference}/pagato', [StripeController::class, 'paid'])->name('booking.paid');
+Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
 Route::view('/offline', 'offline')->name('offline');
 
@@ -112,6 +116,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('settings/notifications', [Admin\SettingsController::class, 'notifications'])->name('settings.notifications');
             Route::post('settings/smtp', [Admin\SettingsController::class, 'smtp'])->name('settings.smtp');
             Route::post('settings/test-email', [Admin\SettingsController::class, 'testEmail'])->name('settings.testEmail');
+            Route::post('settings/stripe', [Admin\SettingsController::class, 'stripe'])->name('settings.stripe');
         });
     });
 });

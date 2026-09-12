@@ -205,6 +205,48 @@
                 <button type="submit" class="btn-outline !py-2.5">Invia test</button>
             </form>
         </div>
+
+        {{-- Pagamenti / Stripe --}}
+        @php($stripeOn = (bool) \App\Support\Settings::get('stripe.enabled', false))
+        <div class="mb-6 rounded-2xl border {{ $stripeOn ? 'border-sage-300 bg-sage-50' : 'border-cream-300 bg-white' }} p-5">
+            <h2 class="font-serif text-lg text-ink">Pagamenti online (Stripe)</h2>
+            <p class="mt-1 text-sm text-ink-light">Inserisci le chiavi di Stripe (le trovi nel tuo cruscotto Stripe → Sviluppatori → Chiavi API).</p>
+
+            <form method="POST" action="{{ route('admin.settings.stripe') }}" class="mt-4 grid gap-4 sm:grid-cols-2">
+                @csrf
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-ink">Chiave segreta (Secret key) {{ \App\Support\Settings::get('stripe.secret_key') ? '(salvata — vuoto = invariata)' : '' }}</label>
+                    <input name="secret_key" type="password" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="sk_live_… oppure sk_test_…">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Chiave pubblica (Publishable)</label>
+                    <input name="public_key" value="{{ \App\Support\Settings::get('stripe.public_key') }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="pk_live_… (opzionale)">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Segreto webhook {{ \App\Support\Settings::get('stripe.webhook_secret') ? '(salvato — vuoto = invariato)' : '' }}</label>
+                    <input name="webhook_secret" type="password" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="whsec_…">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Quota da incassare online</label>
+                    <div class="mt-1 flex items-center gap-2">
+                        <input name="deposit_percent" type="number" min="1" max="100" value="{{ \App\Support\Settings::get('stripe.deposit_percent', 100) }}" class="w-24 rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">
+                        <span class="text-sm text-ink-light">% del totale (100 = intero, es. 30 = caparra)</span>
+                    </div>
+                </div>
+                <label class="flex items-center gap-2 text-sm text-ink sm:col-span-2">
+                    <input type="checkbox" name="enabled" value="1" @checked($stripeOn) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500">
+                    Attiva i pagamenti online con Stripe
+                </label>
+                <div class="sm:col-span-2">
+                    <button type="submit" class="btn-primary !py-2.5">Salva impostazioni Stripe</button>
+                </div>
+            </form>
+
+            <div class="mt-4 rounded-lg bg-cream-50 p-3 text-xs text-ink-light">
+                🔗 <strong>URL webhook</strong> da incollare in Stripe (Sviluppatori → Webhook → Aggiungi endpoint, evento <code>checkout.session.completed</code>):<br>
+                <code class="mt-1 block break-all text-clay-700">{{ url('/stripe/webhook') }}</code>
+            </div>
+        </div>
     @endif
 
     <form method="POST" action="{{ route('admin.settings.update') }}">

@@ -29,6 +29,22 @@
                 </dl>
             </div>
 
+            @if (session('error'))
+                <div class="mx-auto mt-6 max-w-md rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>
+            @endif
+
+            @php($stripeOn = \App\Support\Settings::get('stripe.enabled') && \App\Support\Settings::get('stripe.secret_key'))
+            @if ($stripeOn && $booking->payment_status !== \App\Models\Booking::PAYMENT_PAID)
+                @php($deposit = (int) \App\Support\Settings::get('stripe.deposit_percent', 100))
+                <div class="mx-auto mt-8 max-w-md rounded-2xl border border-clay-200 bg-clay-50 p-5">
+                    <p class="text-sm text-ink-light">Vuoi confermare subito con il pagamento {{ $deposit < 100 ? 'della caparra ('.$deposit.'%)' : 'online' }}?</p>
+                    <a href="{{ route('booking.pay', $booking->reference) }}" class="btn-primary mt-3 w-full">💳 Paga ora con carta</a>
+                    <p class="mt-2 text-xs text-ink-soft">Pagamento sicuro tramite Stripe. Oppure puoi pagare in struttura.</p>
+                </div>
+            @elseif ($booking->payment_status === \App\Models\Booking::PAYMENT_PAID)
+                <div class="mx-auto mt-8 max-w-md rounded-2xl border border-sage-200 bg-sage-50 p-4 text-sm font-medium text-sage-700">✅ Pagamento ricevuto. Grazie!</div>
+            @endif
+
             <p class="mt-6 text-sm text-ink-soft">
                 Per qualsiasi cosa: <a href="tel:{{ $bnb['contact']['phone_raw'] }}" class="text-clay-600">{{ $bnb['contact']['phone'] }}</a>
                 · <a href="mailto:{{ $bnb['contact']['email'] }}" class="text-clay-600">{{ $bnb['contact']['email'] }}</a>
