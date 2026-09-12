@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\MaintenanceMode;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias del controllo ruoli, usabile nelle rotte come 'role:superadmin'.
         $middleware->alias([
             'role' => RoleMiddleware::class,
+        ]);
+
+        // Modalità manutenzione morbida (blocca i visitatori, non lo staff).
+        $middleware->web(append: [
+            MaintenanceMode::class,
         ]);
 
         // Gli utenti non autenticati vengono mandati alla pagina di login admin.

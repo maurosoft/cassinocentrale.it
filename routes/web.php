@@ -67,9 +67,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('bookings/{booking}', [Admin\BookingController::class, 'update'])->name('bookings.update');
         });
 
-        // Utenti (solo superadmin)
+        // Utenti e manutenzione (solo superadmin)
         Route::middleware('role:superadmin')->group(function () {
             Route::resource('users', Admin\UserController::class)->except('show');
+            Route::post('settings/maintenance', [Admin\SettingsController::class, 'maintenance'])->name('settings.maintenance');
         });
     });
 });

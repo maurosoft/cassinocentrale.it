@@ -30,6 +30,13 @@
     @stack('head')
 </head>
 <body class="min-h-screen flex flex-col">
+    @if (($settings['site.maintenance_enabled'] ?? false) && auth()->check())
+        <div class="bg-amber-500 px-4 py-2 text-center text-sm font-medium text-amber-950">
+            🔧 Sito in <strong>manutenzione</strong>: i visitatori vedono la pagina di cortesia. Tu lo vedi perché sei nello staff.
+            <a href="{{ route('admin.settings.index') }}" class="underline">Gestisci</a>
+        </div>
+    @endif
+
     @include('partials.nav')
 
     <main class="flex-1">

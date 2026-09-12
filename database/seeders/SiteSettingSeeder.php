@@ -31,6 +31,10 @@ class SiteSettingSeeder extends Seeder
             // Interruttori di sezione
             ['key' => 'reviews.enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'generale'],
             ['key' => 'whatsapp.button_enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'generale'],
+
+            // Manutenzione
+            ['key' => 'site.maintenance_enabled', 'value' => '0', 'type' => 'boolean', 'group' => 'manutenzione'],
+            ['key' => 'site.maintenance_message', 'value' => '', 'type' => 'string', 'group' => 'manutenzione'],
         ];
 
         foreach ($settings as $data) {

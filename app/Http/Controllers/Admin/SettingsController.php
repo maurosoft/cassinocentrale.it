@@ -21,10 +21,35 @@ class SettingsController extends Controller
 
     public function index(): View
     {
-        $groups = SiteSetting::orderBy('group')->orderBy('key')->get()->groupBy('group');
+        $groups = SiteSetting::orderBy('group')->orderBy('key')->get()
+            ->groupBy('group')
+            ->except('manutenzione'); // gestita a parte con la scheda dedicata
         $labels = self::GROUP_LABELS;
 
         return view('admin.settings.index', compact('groups', 'labels'));
+    }
+
+    /** Accende/spegne la modalità manutenzione (solo superadmin). */
+    public function maintenance(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'maintenance_message' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'site.maintenance_enabled'],
+            ['value' => $request->boolean('maintenance_enabled') ? '1' : '0', 'type' => 'boolean', 'group' => 'manutenzione'],
+        );
+
+        SiteSetting::updateOrCreate(
+            ['key' => 'site.maintenance_message'],
+            ['value' => $data['maintenance_message'] ?? '', 'type' => 'string', 'group' => 'manutenzione'],
+        );
+
+        $on = $request->boolean('maintenance_enabled');
+
+        return redirect()->route('admin.settings.index')
+            ->with('success', $on ? 'Modalità manutenzione ATTIVATA: i visitatori vedono la pagina di cortesia.' : 'Modalità manutenzione disattivata: il sito è di nuovo pubblico.');
     }
 
     public function update(Request $request): RedirectResponse
