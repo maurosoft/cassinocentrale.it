@@ -61,10 +61,12 @@ class BookingController extends Controller
             'label' => trim($c->fullName().' '.($c->email ?: '').' '.($c->phone ?: '')),
         ])->values();
 
-        // Precompilazione (es. clic su un giorno libero del calendario)
+        // Precompilazione: data di sistema di default (o quella cliccata sul calendario),
+        // con partenza proposta al giorno successivo (modificabile).
+        $checkInDefault = $request->query('check_in') ?: Carbon::today()->format('Y-m-d');
         $prefill = [
-            'check_in' => $request->query('check_in'),
-            'check_out' => $request->query('check_in') ? \Illuminate\Support\Carbon::parse($request->query('check_in'))->addDay()->format('Y-m-d') : null,
+            'check_in' => $checkInDefault,
+            'check_out' => Carbon::parse($checkInDefault)->addDay()->format('Y-m-d'),
             'room_id' => $request->query('room_id'),
         ];
 

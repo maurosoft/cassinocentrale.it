@@ -158,5 +158,20 @@
                 if (!results.contains(e.target) && e.target !== search) results.classList.add('hidden');
             });
         });
+
+        // Partenza proposta al giorno successivo all'arrivo.
+        document.addEventListener('DOMContentLoaded', () => {
+            const ci = document.querySelector('input[name="check_in"]');
+            const co = document.querySelector('input[name="check_out"]');
+            if (!ci || !co) return;
+            const nextDay = (v) => { const d = new Date(v); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); };
+            ci.addEventListener('change', () => {
+                if (!ci.value) return;
+                const n = nextDay(ci.value);
+                if (!co.value || co.value <= ci.value) co.value = n;
+                co.min = n;
+            });
+            if (ci.value) co.min = nextDay(ci.value);
+        });
     </script>
 @endsection

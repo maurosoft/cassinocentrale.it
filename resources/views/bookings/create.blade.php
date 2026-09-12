@@ -58,41 +58,55 @@
                     · {{ $nights }} {{ $nights === 1 ? 'notte' : 'notti' }} · {{ $guests }} {{ $guests === 1 ? 'ospite' : 'ospiti' }}
                 </p>
 
-                @if ($availableRooms->isEmpty())
-                    <div class="mt-4 rounded-2xl border border-cream-300 bg-white p-8 text-center">
-                        <p class="font-serif text-xl text-ink">Nessuna camera disponibile per queste date</p>
-                        <p class="mt-2 text-sm text-ink-light">Prova a cambiare le date, oppure contattaci: potremmo avere soluzioni per te.</p>
-                        <a href="tel:{{ $bnb['contact']['phone_raw'] }}" class="btn-outline mt-4">Chiamaci: {{ $bnb['contact']['phone'] }}</a>
-                    </div>
-                @else
-                    <div class="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        @foreach ($availableRooms as $room)
-                            @php($q = $quotes[$room->id])
-                            <article class="card flex flex-col">
-                                <div class="aspect-[4/3] overflow-hidden bg-cream-200">
-                                    <img src="{{ \Illuminate\Support\Str::startsWith($room->coverImage(), ['http','/']) ? $room->coverImage() : asset($room->coverImage()) }}" alt="Camera {{ $room->number_name }}" class="h-full w-full object-cover" loading="lazy">
-                                </div>
-                                <div class="flex flex-1 flex-col p-5">
-                                    <span class="badge-clay w-fit">Camera {{ $room->number_name }}</span>
-                                    <h3 class="mt-2 font-serif text-lg text-ink">{{ $room->name ?: 'Camera '.$room->number_name }}</h3>
-                                    <p class="mt-1 flex-1 text-sm text-ink-light">{{ $room->short_description }}</p>
+                <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach ($roomsGrid as $entry)
+                        @php($room = $entry['room'])
+                        @php($q = $entry['quote'])
+                        <article class="card flex flex-col">
+                            <div class="relative aspect-[4/3] overflow-hidden bg-cream-200">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($room->coverImage(), ['http','/']) ? $room->coverImage() : asset($room->coverImage()) }}"
+                                     alt="Camera {{ $room->number_name }}"
+                                     class="h-full w-full object-cover {{ $entry['available'] ? '' : 'grayscale' }}" loading="lazy">
+                                @unless ($entry['available'])
+                                    <div class="absolute inset-0 bg-ink/25"></div>
+                                    <div class="absolute left-[-25%] top-1/2 w-[150%] -translate-y-1/2 -rotate-[14deg] py-1.5 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg {{ $entry['fits'] ? 'bg-red-600/90' : 'bg-ink/80' }}">
+                                        {{ $entry['fits'] ? 'Occupata' : 'Non adatta' }}
+                                    </div>
+                                @endunless
+                            </div>
+                            <div class="flex flex-1 flex-col p-5">
+                                <span class="badge-clay w-fit">Camera {{ $room->number_name }}</span>
+                                <h3 class="mt-2 font-serif text-lg text-ink">{{ $room->name ?: 'Camera '.$room->number_name }}</h3>
+                                <p class="mt-1 flex-1 text-sm text-ink-light">{{ $room->short_description }}</p>
 
+                                @if ($entry['available'] && $q)
                                     <div class="mt-4 rounded-xl bg-cream-50 p-3 text-sm">
                                         @if ($q['discount_percent'] > 0)
                                             <p class="text-ink-soft"><span class="line-through">€{{ number_format($q['base'], 2, ',', '.') }}</span>
                                             <span class="ml-1 rounded bg-sage-100 px-1.5 py-0.5 text-xs font-medium text-sage-700">-{{ (int) $q['discount_percent'] }}% {{ $q['discount_label'] }}</span></p>
                                         @endif
                                         <p class="font-serif text-2xl font-semibold text-clay-700">€{{ number_format($q['price_per_night'], 2, ',', '.') }}<span class="text-sm font-normal text-ink-soft"> / notte</span></p>
-                                        <p class="mt-1 text-ink-light">Totale {{ $q['nights'] }} {{ $q['nights'] === 1 ? 'notte' : 'notti' }}: <strong class="text-ink">€{{ number_format($q['subtotal'], 2, ',', '.') }}</strong></p>
+                                        <p class="mt-1 text-ink-light">Totale: <strong class="text-ink">€{{ number_format($q['subtotal'], 2, ',', '.') }}</strong></p>
                                     </div>
-
                                     <a href="{{ route('booking.create', ['checkin' => $checkIn->format('Y-m-d'), 'checkout' => $checkOut->format('Y-m-d'), 'guests' => $guests, 'room' => $room->slug]) }}#prenota"
                                        class="btn-primary mt-4 {{ $selectedRoom && $selectedRoom->id === $room->id ? 'ring-2 ring-clay-300 ring-offset-2' : '' }}">
-                                        {{ $selectedRoom && $selectedRoom->id === $room->id ? 'Camera scelta ✓' : 'Prenota questa camera' }}
+                                        {{ $selectedRoom && $selectedRoom->id === $room->id ? 'Camera scelta ✓' : 'Prenota' }}
                                     </a>
-                                </div>
-                            </article>
-                        @endforeach
+                                @else
+                                    <p class="mt-4 rounded-xl bg-cream-50 p-3 text-center text-sm text-ink-soft">
+                                        {{ $entry['fits'] ? 'Non disponibile per queste date.' : 'Adatta fino a '.$room->max_guests.' ospiti.' }}
+                                    </p>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                @if ($roomsGrid->where('available', true)->isEmpty())
+                    <div class="mt-6 rounded-2xl border border-cream-300 bg-white p-6 text-center">
+                        <p class="font-serif text-lg text-ink">Nessuna camera disponibile per queste date</p>
+                        <p class="mt-1 text-sm text-ink-light">Prova a cambiare le date, oppure contattaci.</p>
+                        <a href="tel:{{ $bnb['contact']['phone_raw'] }}" class="btn-outline mt-3">Chiamaci: {{ $bnb['contact']['phone'] }}</a>
                     </div>
                 @endif
             </div>

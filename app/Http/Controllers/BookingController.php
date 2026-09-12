@@ -27,8 +27,7 @@ class BookingController extends Controller
         $guests = (int) $request->integer('guests', 2);
         $guests = max(1, min($guests, 4));
 
-        $availableRooms = collect();
-        $quotes = [];
+        $roomsGrid = collect(); // tutte le camere con stato disponibile/occupata
         $selectedRoom = null;
         $selectedQuote = null;
         $nights = 0;
@@ -39,17 +38,26 @@ class BookingController extends Controller
                 $error = 'La data di partenza deve essere successiva a quella di arrivo.';
             } else {
                 $nights = (int) $checkIn->diffInDays($checkOut);
-                $availableRooms = $this->availability->availableRooms($checkIn, $checkOut, $guests);
 
-                foreach ($availableRooms as $room) {
-                    $quotes[$room->id] = $this->pricing->quote($room, $nights, $guests);
-                }
+                // Mostriamo TUTTE le camere attive, segnando quelle occupate.
+                $roomsGrid = Room::active()->ordered()->with('services')->get()->map(function (Room $room) use ($checkIn, $checkOut, $guests, $nights) {
+                    $fits = $room->max_guests >= $guests;
+                    $free = $fits && $this->availability->isRoomAvailable($room, $checkIn, $checkOut);
+
+                    return [
+                        'room' => $room,
+                        'available' => $free,
+                        'fits' => $fits,
+                        'quote' => $free ? $this->pricing->quote($room, $nights, $guests) : null,
+                    ];
+                });
 
                 // Camera preselezionata (da link "Prenota questa camera")
                 if ($slug = $request->query('room')) {
-                    $selectedRoom = $availableRooms->firstWhere('slug', $slug);
-                    if ($selectedRoom) {
-                        $selectedQuote = $quotes[$selectedRoom->id];
+                    $entry = $roomsGrid->firstWhere(fn ($e) => $e['room']->slug === $slug && $e['available']);
+                    if ($entry) {
+                        $selectedRoom = $entry['room'];
+                        $selectedQuote = $entry['quote'];
                     }
                 }
             }
@@ -60,7 +68,7 @@ class BookingController extends Controller
 
         return view('bookings.create', compact(
             'checkIn', 'checkOut', 'guests', 'nights',
-            'availableRooms', 'quotes', 'selectedRoom', 'selectedQuote',
+            'roomsGrid', 'selectedRoom', 'selectedQuote',
             'blockedDates', 'error',
         ));
     }
