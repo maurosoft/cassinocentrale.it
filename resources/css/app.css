@@ -115,6 +115,8 @@
     padding: 2rem;
     background: rgba(58, 46, 38, 0.93);
 }
+/* Tenuto chiuso finché non si apre una foto (vince sull'attributo hidden) */
+.lightbox[hidden] { display: none; }
 .lightbox__img {
     max-width: 92vw;
     max-height: 86vh;
