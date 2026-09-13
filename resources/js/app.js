@@ -97,4 +97,60 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         });
     }
+
+    // Galleria a schermo intero (lightbox) per le foto delle camere.
+    const triggers = Array.from(document.querySelectorAll('[data-lightbox]'));
+    if (triggers.length) {
+        const groups = {};
+        triggers.forEach((el) => {
+            const g = el.dataset.lightbox || 'default';
+            (groups[g] = groups[g] || []).push(el.dataset.src);
+        });
+
+        const overlay = document.createElement('div');
+        overlay.className = 'lightbox';
+        overlay.hidden = true;
+        overlay.innerHTML =
+            '<button class="lightbox__close" type="button" aria-label="Chiudi">&times;</button>'
+            + '<button class="lightbox__nav lightbox__prev" type="button" aria-label="Precedente">&#8249;</button>'
+            + '<img class="lightbox__img" alt="">'
+            + '<button class="lightbox__nav lightbox__next" type="button" aria-label="Successiva">&#8250;</button>'
+            + '<span class="lightbox__counter"></span>';
+        document.body.appendChild(overlay);
+
+        const imgEl = overlay.querySelector('.lightbox__img');
+        const counter = overlay.querySelector('.lightbox__counter');
+        let list = [];
+        let i = 0;
+
+        const render = () => {
+            imgEl.src = list[i];
+            counter.textContent = list.length > 1 ? `${i + 1} / ${list.length}` : '';
+        };
+        const openAt = (arr, index) => {
+            list = arr;
+            i = Math.max(0, index);
+            render();
+            overlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+        };
+        const close = () => { overlay.hidden = true; document.body.style.overflow = ''; };
+        const prev = () => { i = (i - 1 + list.length) % list.length; render(); };
+        const next = () => { i = (i + 1) % list.length; render(); };
+
+        triggers.forEach((el) => el.addEventListener('click', () => {
+            const arr = groups[el.dataset.lightbox || 'default'];
+            openAt(arr, arr.indexOf(el.dataset.src));
+        }));
+        overlay.querySelector('.lightbox__close').addEventListener('click', close);
+        overlay.querySelector('.lightbox__prev').addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+        overlay.querySelector('.lightbox__next').addEventListener('click', (e) => { e.stopPropagation(); next(); });
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        document.addEventListener('keydown', (e) => {
+            if (overlay.hidden) return;
+            if (e.key === 'Escape') close();
+            else if (e.key === 'ArrowLeft') prev();
+            else if (e.key === 'ArrowRight') next();
+        });
+    }
 });

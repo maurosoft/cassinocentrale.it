@@ -15,21 +15,27 @@
     </div>
 
     <section class="container-bnb grid gap-10 pb-16 lg:grid-cols-[1.4fr_1fr]">
-        {{-- Galleria --}}
+        {{-- Galleria (16:9, miniature cliccabili, apertura a schermo intero) --}}
         <div>
             @php($images = ! empty($room->images) ? $room->images : [$room->coverImage()])
-            <div class="overflow-hidden rounded-3xl bg-cream-200">
-                <img src="{{ \Illuminate\Support\Str::startsWith($images[0], ['http', '/']) ? $images[0] : asset($images[0]) }}"
-                     alt="Camera {{ $room->number_name }}" class="aspect-[4/3] w-full object-cover">
-            </div>
+            @php($imgUrl = fn ($i) => \Illuminate\Support\Str::startsWith($i, ['http', '/']) ? $i : asset($i))
+            <button type="button" data-lightbox="room" data-src="{{ $imgUrl($images[0]) }}"
+                    class="group block w-full overflow-hidden rounded-3xl bg-cream-200">
+                <img src="{{ $imgUrl($images[0]) }}" alt="Camera {{ $room->number_name }}"
+                     class="aspect-video w-full object-cover transition duration-500 group-hover:scale-105">
+            </button>
             @if (count($images) > 1)
-                <div class="mt-4 grid grid-cols-4 gap-3">
-                    @foreach (array_slice($images, 1, 4) as $img)
-                        <img src="{{ \Illuminate\Support\Str::startsWith($img, ['http', '/']) ? $img : asset($img) }}"
-                             alt="" class="aspect-square w-full rounded-xl object-cover">
+                <div class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                    @foreach (array_slice($images, 1) as $img)
+                        <button type="button" data-lightbox="room" data-src="{{ $imgUrl($img) }}"
+                                class="group overflow-hidden rounded-xl bg-cream-200">
+                            <img src="{{ $imgUrl($img) }}" alt="Foto camera {{ $room->number_name }}"
+                                 class="aspect-video w-full object-cover transition duration-500 group-hover:scale-105">
+                        </button>
                     @endforeach
                 </div>
             @endif
+            <p class="mt-2 text-center text-xs text-ink-soft">Clicca una foto per ingrandirla</p>
         </div>
 
         {{-- Dettagli --}}
