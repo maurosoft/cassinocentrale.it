@@ -68,13 +68,15 @@ chown -R promoweb:promoweb /home/promoweb/web/cassinocentrale.it/private/app
 - **Fase 5** — Stripe (pagamenti online) via Checkout ospitato. Chiavi inserite dall'admin.
 - **Extra** — Modalità manutenzione, logo da admin, favicon da admin, galleria camere 16:9 con lightbox,
   **immagini home (hero + parallax) modificabili da admin** (17/09/2026).
+- **Fase 6a — Chatbot "Zap" SUL SITO** ✅ (17/09/2026): widget bollicina in basso a destra.
+  Admin → "Chatbot Zap" (solo superadmin): scegli provider (Anthropic/OpenAI/Gemini/DeepSeek/OpenRouter),
+  incolli la chiave API, premi **"Rileva modelli"**, scegli il modello, spunti "Attiva", salvi.
+  Zap conosce in automatico camere, prezzi e luoghi/negozi (con indirizzo). Chiavi cifrate nel DB.
+  Log conversazioni + prova rapida nel pannello. Provider scelto per i primi test: **DeepSeek**.
 
 ## 🔜 Cosa MANCA (prossimi passi)
 
-- **Fase 6 — Chatbot "Zap"** (IN CORSO): assistente AI sul sito (+ WhatsApp).
-  L'admin sceglie **provider** (Anthropic, Gemini, OpenAI, DeepSeek, OpenRouter) e **modello**
-  (elenco modelli rilevato in automatico). Zap risponde ai clienti su B&B, camere, prezzi,
-  e indirizzi dei luoghi/negozi in "Scopri Cassino".
+- **Fase 6b — Zap anche su WhatsApp** (da fare): ricezione messaggi in arrivo dal provider WhatsApp.
 - **Fase 7 — Notifiche push (PWA / VAPID).**
 - **Backlog** — Recensioni Google Business (import + risposte AI in bozza + pubblica).
 - Verificare pagamento Stripe di prova (carta 4242 4242 4242 4242).
