@@ -22,6 +22,7 @@
         ['label' => 'Chiusure', 'route' => 'admin.closures.index', 'active' => 'admin.closures.*', 'icon' => 'x', 'roles' => ['superadmin','reception']],
         ['label' => 'Clienti', 'route' => 'admin.customers.index', 'active' => 'admin.customers.*', 'icon' => 'users', 'roles' => ['superadmin','reception']],
         ['label' => 'WhatsApp', 'route' => 'admin.whatsapp.index', 'active' => 'admin.whatsapp.*', 'icon' => 'phone', 'roles' => ['superadmin']],
+        ['label' => 'Chatbot Zap', 'route' => 'admin.chatbot.index', 'active' => 'admin.chatbot.*', 'icon' => 'sparkles', 'roles' => ['superadmin']],
         ['label' => 'Log email', 'route' => 'admin.logs.email', 'active' => 'admin.logs.email', 'icon' => 'mail', 'roles' => ['superadmin','reception']],
         ['label' => 'Log WhatsApp', 'route' => 'admin.logs.whatsapp', 'active' => 'admin.logs.whatsapp', 'icon' => 'phone', 'roles' => ['superadmin','reception']],
         ['label' => 'Camere', 'route' => 'admin.rooms.index', 'active' => 'admin.rooms.*', 'icon' => 'bed', 'roles' => ['superadmin','reception','editor']],

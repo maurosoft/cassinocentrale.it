@@ -47,7 +47,8 @@
     @include('partials.footer')
     @include('partials.cookie-banner')
 
-    {{-- Qui, in una fase successiva, andrà il widget del chatbot (in basso a destra). --}}
+    {{-- Widget del chatbot "Zap" (compare solo se attivato da admin) --}}
+    @include('partials.chatbot')
 
     @stack('scripts')
 </body>

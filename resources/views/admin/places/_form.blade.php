@@ -12,6 +12,11 @@
                     <label class="block text-sm font-medium text-ink">Descrizione</label>
                     <textarea name="description" rows="4" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500">{{ old('description', $place->description) }}</textarea>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink">Indirizzo</label>
+                    <input name="address" value="{{ old('address', $place->address) }}" class="mt-1 w-full rounded-lg border-cream-300 focus:border-clay-500 focus:ring-clay-500" placeholder="Es. Piazza De Gasperi, 03043 Cassino (FR)">
+                    <p class="mt-1 text-xs text-ink-soft">Usato anche da Zap (il chatbot) per indicare dove si trova.</p>
+                </div>
                 <div class="grid gap-4 sm:grid-cols-3">
                     <div>
                         <label class="block text-sm font-medium text-ink">A piedi</label>

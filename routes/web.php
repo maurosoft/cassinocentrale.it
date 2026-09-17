@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DiscoverController;
 use App\Http\Controllers\HomeController;
@@ -33,6 +34,10 @@ Route::get('/prenota/conferma/{reference}', [BookingController::class, 'confirma
 Route::get('/prenota/{reference}/paga', [StripeController::class, 'pay'])->name('booking.pay');
 Route::get('/prenota/{reference}/pagato', [StripeController::class, 'paid'])->name('booking.paid');
 Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
+
+// Chatbot "Zap" (widget sul sito)
+Route::post('/chatbot/messaggio', [ChatbotController::class, 'message'])
+    ->middleware('throttle:20,1')->name('chatbot.message');
 
 Route::view('/offline', 'offline')->name('offline');
 
@@ -118,6 +123,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('settings/smtp', [Admin\SettingsController::class, 'smtp'])->name('settings.smtp');
             Route::post('settings/test-email', [Admin\SettingsController::class, 'testEmail'])->name('settings.testEmail');
             Route::post('settings/stripe', [Admin\SettingsController::class, 'stripe'])->name('settings.stripe');
+
+            // Chatbot "Zap"
+            Route::get('chatbot', [Admin\ChatbotController::class, 'index'])->name('chatbot.index');
+            Route::post('chatbot', [Admin\ChatbotController::class, 'save'])->name('chatbot.save');
+            Route::post('chatbot/detect-models', [Admin\ChatbotController::class, 'detectModels'])->name('chatbot.detectModels');
+            Route::post('chatbot/test', [Admin\ChatbotController::class, 'test'])->name('chatbot.test');
         });
     });
 });

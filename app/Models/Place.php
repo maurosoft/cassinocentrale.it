@@ -34,6 +34,7 @@ class Place extends Model
         'name',
         'slug',
         'description',
+        'address',
         'category',
         'type',
         'distance_walking',

@@ -58,6 +58,7 @@ class PlaceController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
+            'address' => ['nullable', 'string', 'max:200'],
             'category' => ['nullable', 'string', 'max:50'],
             'type' => ['nullable', 'string', 'max:50'],
             'distance_walking' => ['nullable', 'string', 'max:80'],
