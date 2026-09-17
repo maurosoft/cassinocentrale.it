@@ -20,6 +20,13 @@
                 <input type="checkbox" name="enabled" value="1" @checked($current['enabled']) class="rounded border-cream-300 text-clay-500 focus:ring-clay-500">
                 Attiva Zap sul sito (mostra la bollicina in basso a destra)
             </label>
+            <label class="mt-3 flex items-start gap-2 text-sm text-ink">
+                <input type="checkbox" name="booking_enabled" value="1" @checked($current['booking_enabled']) class="mt-0.5 rounded border-cream-300 text-clay-500 focus:ring-clay-500">
+                <span>
+                    Consenti a Zap di <strong>controllare la disponibilità e prendere prenotazioni</strong> in chat.
+                    <span class="block text-xs text-ink-soft">Legge il calendario vero e crea richieste "da approvare" (pagamento in struttura). Raccoglie anche il consenso privacy dell'ospite.</span>
+                </span>
+            </label>
 
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>

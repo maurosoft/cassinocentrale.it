@@ -30,6 +30,7 @@ class ChatbotController extends Controller
             'keyStatus' => $keyStatus,
             'current' => [
                 'enabled' => (bool) Settings::get('chatbot.enabled', false),
+                'booking_enabled' => (bool) Settings::get('chatbot.booking_enabled', false),
                 'provider' => Settings::get('chatbot.provider', 'deepseek'),
                 'model' => (string) Settings::get('chatbot.model', ''),
                 'name' => $bot->name(),
@@ -62,6 +63,7 @@ class ChatbotController extends Controller
         $set('chatbot.greeting', $data['greeting'] ?? '');
         $set('chatbot.notes', $data['notes'] ?? '');
         $set('chatbot.enabled', $request->boolean('enabled') ? '1' : '0', 'boolean');
+        $set('chatbot.booking_enabled', $request->boolean('booking_enabled') ? '1' : '0', 'boolean');
 
         // La chiave API si aggiorna solo se inserita (vuoto = resta quella salvata).
         if (! empty($data['api_key'])) {

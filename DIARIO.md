@@ -73,6 +73,9 @@ chown -R promoweb:promoweb /home/promoweb/web/cassinocentrale.it/private/app
   incolli la chiave API, premi **"Rileva modelli"**, scegli il modello, spunti "Attiva", salvi.
   Zap conosce in automatico camere, prezzi e luoghi/negozi (con indirizzo). Chiavi cifrate nel DB.
   Log conversazioni + prova rapida nel pannello. Provider scelto per i primi test: **DeepSeek**.
+- **Fase 6a+ — Zap prenota in chat** ✅ (18/09/2026): con l'interruttore "Consenti a Zap di prenotare",
+  Zap legge il **calendario vero** (disponibilità + prezzi reali, suggerisce date alternative) e crea
+  prenotazioni **"da approvare"** raccogliendo nome/email/telefono + **consenso privacy** nel dialogo.
 
 ## 🔜 Cosa MANCA (prossimi passi)
 
