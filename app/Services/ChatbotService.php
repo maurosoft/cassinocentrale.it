@@ -295,6 +295,9 @@ class ChatbotService
                 if ($d !== '') {
                     $parts[] = $d;
                 }
+                if ($place->is_convention && ! empty($place->convention_description)) {
+                    $parts[] = 'convenzione per i nostri ospiti: '.Str::limit(strip_tags((string) $place->convention_description), 100, '');
+                }
                 $lines[] = '- '.implode(' · ', $parts);
             }
         }
