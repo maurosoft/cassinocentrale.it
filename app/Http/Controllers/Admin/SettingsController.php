@@ -129,6 +129,35 @@ class SettingsController extends Controller
         );
     }
 
+    /** Carica/aggiorna le immagini della home: sfondo hero e fascia parallax. */
+    public function hero(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'hero' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'parallax' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ], [], [
+            'hero' => 'immagine principale',
+            'parallax' => 'immagine fascia',
+        ]);
+
+        if (! $request->hasFile('hero') && ! $request->hasFile('parallax')) {
+            return redirect()->route('admin.settings.index')
+                ->with('error', 'Nessuna immagine selezionata: scegli almeno un file.');
+        }
+
+        foreach (['hero', 'parallax'] as $field) {
+            if ($request->hasFile($field)) {
+                $path = $request->file($field)->store('branding', 'public');
+                SiteSetting::updateOrCreate(
+                    ['key' => 'branding.'.$field],
+                    ['value' => 'storage/'.$path, 'type' => 'string', 'group' => 'branding'],
+                );
+            }
+        }
+
+        return redirect()->route('admin.settings.index')->with('success', 'Immagini della home aggiornate.');
+    }
+
     /** Carica/aggiorna la favicon (icona nella scheda del browser). */
     public function favicon(Request $request): RedirectResponse
     {

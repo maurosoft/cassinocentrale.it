@@ -85,6 +85,37 @@
         </div>
     </div>
 
+    {{-- Immagini della home (sfondo hero + fascia parallax) --}}
+    @php($heroImg = \App\Support\Settings::get('branding.hero'))
+    @php($parallaxImg = \App\Support\Settings::get('branding.parallax'))
+    <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">
+        <h2 class="font-serif text-lg text-ink">Immagini della home</h2>
+        <p class="mt-1 text-sm text-ink-light">
+            La grande foto in cima (hero) e la fascia con effetto parallax più in basso.
+            Consiglio: foto orizzontali di buona qualità (larghe almeno 1600px). Se non carichi nulla, restano quelle attuali.
+        </p>
+        <form method="POST" action="{{ route('admin.settings.hero') }}" enctype="multipart/form-data" class="mt-4 grid gap-5 sm:grid-cols-2">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-ink">Foto principale (hero)</label>
+                <div class="mt-2 aspect-video w-full overflow-hidden rounded-xl border border-cream-300 bg-cream-50">
+                    <img src="{{ $heroImg ? asset($heroImg) : asset('images/rooms/hero.jpg') }}" alt="Anteprima hero" class="h-full w-full object-cover">
+                </div>
+                <input type="file" name="hero" accept="image/*" class="mt-3 text-sm text-ink-light file:mr-3 file:rounded-lg file:border-0 file:bg-clay-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-clay-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-ink">Foto fascia (parallax)</label>
+                <div class="mt-2 aspect-video w-full overflow-hidden rounded-xl border border-cream-300 bg-cream-50">
+                    <img src="{{ $parallaxImg ? asset($parallaxImg) : asset('images/rooms/room-102.jpg') }}" alt="Anteprima parallax" class="h-full w-full object-cover">
+                </div>
+                <input type="file" name="parallax" accept="image/*" class="mt-3 text-sm text-ink-light file:mr-3 file:rounded-lg file:border-0 file:bg-clay-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-clay-700">
+            </div>
+            <div class="sm:col-span-2">
+                <button type="submit" class="btn-primary !py-2">Salva immagini</button>
+            </div>
+        </form>
+    </div>
+
     {{-- Sconto seconda camera (gruppi) --}}
     @php($secondDiscount = \App\Support\Settings::get('pricing.second_room_discount_percent', config('bnb.pricing.second_room_discount_percent', 15)))
     <div class="mb-6 rounded-2xl border border-cream-300 bg-white p-5">

@@ -3,7 +3,7 @@
 @section('content')
     {{-- ===================== HERO ===================== --}}
     <section class="relative isolate overflow-hidden">
-        <img src="{{ asset('images/rooms/hero.jpg') }}" alt=""
+        <img src="{{ ! empty($settings['branding.hero']) ? asset($settings['branding.hero']) : asset('images/rooms/hero.jpg') }}" alt=""
              class="absolute inset-0 -z-10 h-full w-full object-cover" aria-hidden="true">
         <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/45 to-ink/70"></div>
 
@@ -100,7 +100,7 @@
 
     {{-- ===================== FASCIA PARALLAX ===================== --}}
     <section class="relative isolate overflow-hidden">
-        <img src="{{ asset('images/rooms/room-102.jpg') }}" alt="" data-parallax
+        <img src="{{ ! empty($settings['branding.parallax']) ? asset($settings['branding.parallax']) : asset('images/rooms/room-102.jpg') }}" alt="" data-parallax
              class="absolute left-0 top-[-25%] -z-10 h-[150%] w-full object-cover" aria-hidden="true">
         <div class="absolute inset-0 -z-10 bg-ink/55"></div>
         <div class="container-bnb flex min-h-[55vh] flex-col items-center justify-center py-20 text-center text-cream-50">
