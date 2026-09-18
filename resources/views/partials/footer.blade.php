@@ -3,6 +3,12 @@
         <div>
             <span class="font-serif text-xl font-semibold text-cream-50">B&amp;B Cassino Centrale</span>
             <p class="mt-3 text-sm text-cream-200/80">{{ $bnb['slogan'] }}</p>
+            <p class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-cream-200/75">
+                <span>CIN: <strong class="font-medium text-cream-100">IT060019C1J7X8XZ56</strong></span>
+                <span class="text-sage-600">·</span>
+                <span>CIR: <strong class="font-medium text-cream-100">060019-B&amp;B-00029</strong></span>
+                <button type="button" data-cin-open class="cin-i" aria-label="Cosa sono CIN e CIR?" title="Cosa sono?">i</button>
+            </p>
         </div>
 
         <div class="text-sm">
@@ -53,4 +59,47 @@
             </div>
         </div>
     </div>
+
+    {{-- Popup informativo CIN / CIR --}}
+    <style>
+        .cin-i{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;
+            border:1px solid rgba(250,244,234,.55);color:#faf4ea;font:700 10px/1 'Figtree',system-ui,sans-serif;
+            cursor:pointer;background:transparent;transition:background .2s}
+        .cin-i:hover{background:rgba(250,244,234,.18)}
+        .cin-modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(58,46,38,.65)}
+        .cin-modal.open{display:flex}
+        .cin-card{max-width:480px;width:100%;background:#faf4ea;color:#3a2e26;border-radius:16px;padding:1.5rem 1.6rem;
+            box-shadow:0 24px 60px rgba(0,0,0,.4);position:relative}
+        .cin-card h3{font:600 20px/1.2 'Cormorant Garamond',serif;color:#b85c38;margin:0 0 .2rem}
+        .cin-card h4{font:600 14px/1.3 'Figtree',system-ui,sans-serif;margin:1rem 0 .15rem;color:#3a2e26}
+        .cin-card p{font:400 13.5px/1.5 'Figtree',system-ui,sans-serif;color:#5b4f45;margin:.15rem 0}
+        .cin-card code{background:#efe6d5;border-radius:6px;padding:1px 6px;font-size:12.5px;color:#3a2e26}
+        .cin-x{position:absolute;top:.7rem;right:.9rem;background:transparent;border:0;font-size:22px;line-height:1;color:#9a8c7d;cursor:pointer}
+        .cin-x:hover{color:#3a2e26}
+    </style>
+
+    <div class="cin-modal" data-cin-modal role="dialog" aria-modal="true" aria-labelledby="cin-title">
+        <div class="cin-card">
+            <button type="button" class="cin-x" data-cin-close aria-label="Chiudi">&times;</button>
+            <h3 id="cin-title">CIN e CIR: cosa sono</h3>
+            <p>Sono i codici identificativi obbligatori per legge per le strutture ricettive in Italia. Servono a rendere l'attività tracciabile e regolare.</p>
+            <h4>CIN — Codice Identificativo Nazionale</h4>
+            <p>Codice unico rilasciato dal <strong>Ministero del Turismo</strong> a livello nazionale. Identifica ufficialmente la struttura e va indicato negli annunci e nelle inserzioni.<br><code>IT060019C1J7X8XZ56</code></p>
+            <h4>CIR — Codice Identificativo Regionale</h4>
+            <p>Codice rilasciato dalla <strong>Regione Lazio</strong> per le strutture ricettive del territorio.<br><code>060019-B&amp;B-00029</code></p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const modal = document.querySelector('[data-cin-modal]');
+            if (!modal) return;
+            const open = () => modal.classList.add('open');
+            const close = () => modal.classList.remove('open');
+            document.querySelectorAll('[data-cin-open]').forEach(b => b.addEventListener('click', open));
+            modal.querySelector('[data-cin-close]').addEventListener('click', close);
+            modal.addEventListener('click', e => { if (e.target === modal) close(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+        })();
+    </script>
 </footer>
